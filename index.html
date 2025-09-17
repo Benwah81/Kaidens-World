@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+function loadVisualSchedule() {
+            document.getElementById('visualScheduleContent').innerHTML = `
+                <div style="padding: 20px; background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); min-height: 100vh;">
+                    <div style="text-align: center; margin-bottom:<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -226,13 +229,15 @@
         }
 
         .stats-area {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 20px;
-            color: white;
+            color: #333;
             text-align: center;
             margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 2px solid rgba(255,255,255,0.8);
         }
 
         .stats-grid {
@@ -243,21 +248,32 @@
         }
 
         .stat-item {
-            background: rgba(255,255,255,0.2);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 15px;
             border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
         }
 
         .stat-number {
             font-size: 2em;
             font-weight: bold;
             display: block;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
         .stat-label {
             font-size: 0.9em;
-            opacity: 0.8;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .stats-area h3 {
+            color: #333;
+            font-size: 1.4em;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
 
         /* Choice Board Styles */
@@ -392,7 +408,7 @@
         </div>
 
         <div class="app-grid">
-            <div class="app-card choice-board" onclick="openApp('choiceBoard')">
+            <div class="app-card choice-board" onclick="openApp('choiceBoard')" style="cursor: pointer;">
                 <span class="app-icon">💬</span>
                 <div class="app-title">Choice Board</div>
                 <div class="app-description">
@@ -406,7 +422,7 @@
                 </div>
             </div>
 
-            <div class="app-card sound-explorer" onclick="openApp('soundExplorer')">
+            <div class="app-card sound-explorer" onclick="openApp('soundExplorer')" style="cursor: pointer;">
                 <span class="app-icon">🎵</span>
                 <div class="app-title">Sound Explorer</div>
                 <div class="app-description">
@@ -420,7 +436,7 @@
                 </div>
             </div>
 
-            <div class="app-card visual-schedule" onclick="openApp('visualSchedule')">
+            <div class="app-card visual-schedule" onclick="openApp('visualSchedule')" style="cursor: pointer;">
                 <span class="app-icon">📅</span>
                 <div class="app-title">My Schedule</div>
                 <div class="app-description">
@@ -467,8 +483,15 @@
         }
 
         function openApp(appName) {
+            console.log('Opening app:', appName); // Debug log
+            
             const mainMenu = document.getElementById('mainMenu');
             const backButton = document.getElementById('backButton');
+            
+            if (!mainMenu || !backButton) {
+                console.error('Missing elements:', { mainMenu, backButton });
+                return;
+            }
             
             // Hide main menu
             mainMenu.style.display = 'none';
@@ -479,6 +502,11 @@
             containers.forEach(container => container.classList.remove('active'));
             
             const selectedContainer = document.getElementById(appName + 'Container');
+            if (!selectedContainer) {
+                console.error('Container not found:', appName + 'Container');
+                return;
+            }
+            
             selectedContainer.classList.add('active');
             
             // Update session stats
@@ -496,6 +524,8 @@
                 sessionStats.visualScheduleSessions++;
                 loadVisualSchedule();
             }
+            
+            console.log('App loaded successfully:', appName); // Debug log
         }
 
         function loadChoiceBoard() {
@@ -639,4 +669,769 @@
             document.querySelector(`[data-category="${category}"]`).classList.add('active');
             
             window.currentCategory = category;
-            renderChoices
+            renderChoices(category);
+        }
+
+        function renderChoices(category) {
+            const grid = document.getElementById('choiceGrid');
+            if (!grid) return;
+            
+            const choices = choiceCategories[category] || [];
+            grid.innerHTML = choices.map(choice => `
+                <div class="choice-card" onclick="selectChoice('${choice.id}', '${choice.text}')">
+                    <span class="choice-icon">${choice.icon}</span>
+                    <div class="choice-text">${choice.text}</div>
+                    <div class="choice-subtext">${choice.subtext}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectChoice(choiceId, choiceText) {
+            // Clear previous selection
+            document.querySelectorAll('.choice-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Mark current selection
+            event.target.closest('.choice-card').classList.add('selected');
+            
+            // Show feedback
+            const feedbackArea = document.getElementById('feedbackArea');
+            if (feedbackArea) {
+                feedbackArea.innerHTML = `
+                    <div style="background: #4caf50; color: white; padding: 20px 40px; border-radius: 50px; font-size: 1.5em; font-weight: bold; animation: celebrateSelection 0.6s ease;">
+                        ✨ ${choiceText}! ✨
+                    </div>
+                `;
+            }
+            
+            // Create celebration effect
+            createCelebrationEffect();
+            
+            // Text-to-speech
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(choiceText);
+                utterance.rate = 0.8;
+                utterance.pitch = 1.1;
+                utterance.volume = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function createCelebrationEffect() {
+            const stars = ['⭐', '✨', '🌟', '💫'];
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.style.cssText = `
+                        position: fixed; 
+                        pointer-events: none; 
+                        font-size: 2em; 
+                        color: #ffd700;
+                        z-index: 9999;
+                        animation: starfall 1.5s ease-out forwards;
+                    `;
+                    star.textContent = stars[Math.floor(Math.random() * stars.length)];
+                    star.style.left = Math.random() * window.innerWidth + 'px';
+                    star.style.top = '10px';
+                    document.body.appendChild(star);
+                    
+                    setTimeout(() => {
+                        if (star.parentNode) {
+                            star.parentNode.removeChild(star);
+                        }
+                    }, 1500);
+                }, i * 100);
+            }
+        }
+
+        function loadSoundExplorer() {
+            document.getElementById('soundExplorerContent').innerHTML = `
+                <div style="padding: 20px; background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); min-height: 100vh; overflow-x: hidden;">
+                    <div style="text-align: center; margin-bottom: 30px; color: #7b1fa2;">
+                        <h1 style="font-size: 2.5em; font-weight: bold; margin-bottom: 10px;">🎵 Sound Explorer 🎵</h1>
+                        <p>Touch to hear amazing sounds!</p>
+                    </div>
+
+                    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap;">
+                        <button class="sound-mode-button active" onclick="switchSoundMode('explore')" style="padding: 12px 20px; font-size: 1em; font-weight: bold; border: 3px solid #7b1fa2; border-radius: 20px; background: #7b1fa2; color: white; cursor: pointer; transition: all 0.3s ease; min-width: 100px;">Free Explore</button>
+                        <button class="sound-mode-button" onclick="switchSoundMode('matching')" style="padding: 12px 20px; font-size: 1em; font-weight: bold; border: 3px solid #7b1fa2; border-radius: 20px; background: white; color: #7b1fa2; cursor: pointer; transition: all 0.3s ease; min-width: 100px;">Sound Matching</button>
+                        <button class="sound-mode-button" onclick="switchSoundMode('record')" style="padding: 12px 20px; font-size: 1em; font-weight: bold; border: 3px solid #7b1fa2; border-radius: 20px; background: white; color: #7b1fa2; cursor: pointer; transition: all 0.3s ease; min-width: 100px;">My Sounds</button>
+                    </div>
+
+                    <div id="soundCategorySelector" style="display: flex; justify-content: center; gap: 8px; margin-bottom: 25px; flex-wrap: wrap;">
+                        <button class="sound-category-button active" onclick="selectSoundCategory('all')" style="padding: 10px 15px; font-size: 0.9em; font-weight: bold; border: 2px solid #9c27b0; border-radius: 15px; background: #9c27b0; color: white; cursor: pointer; transition: all 0.3s ease; min-width: 80px;">All Sounds</button>
+                        <button class="sound-category-button" onclick="selectSoundCategory('animals')" style="padding: 10px 15px; font-size: 0.9em; font-weight: bold; border: 2px solid #9c27b0; border-radius: 15px; background: white; color: #9c27b0; cursor: pointer; transition: all 0.3s ease; min-width: 80px;">Animals</button>
+                        <button class="sound-category-button" onclick="selectSoundCategory('vehicles')" style="padding: 10px 15px; font-size: 0.9em; font-weight: bold; border: 2px solid #9c27b0; border-radius: 15px; background: white; color: #9c27b0; cursor: pointer; transition: all 0.3s ease; min-width: 80px;">Vehicles</button>
+                        <button class="sound-category-button" onclick="selectSoundCategory('instruments')" style="padding: 10px 15px; font-size: 0.9em; font-weight: bold; border: 2px solid #9c27b0; border-radius: 15px; background: white; color: #9c27b0; cursor: pointer; transition: all 0.3s ease; min-width: 80px;">Music</button>
+                        <button class="sound-category-button" onclick="selectSoundCategory('nature')" style="padding: 10px 15px; font-size: 0.9em; font-weight: bold; border: 2px solid #9c27b0; border-radius: 15px; background: white; color: #9c27b0; cursor: pointer; transition: all 0.3s ease; min-width: 80px;">Nature</button>
+                        <button class="sound-category-button" onclick="selectSoundCategory('household')" style="padding: 10px 15px; font-size: 0.9em; font-weight: bold; border: 2px solid #9c27b0; border-radius: 15px; background: white; color: #9c27b0; cursor: pointer; transition: all 0.3s ease; min-width: 80px;">Home</button>
+                        <button class="sound-category-button" onclick="selectSoundCategory('body_sounds')" style="padding: 10px 15px; font-size: 0.9em; font-weight: bold; border: 2px solid #9c27b0; border-radius: 15px; background: white; color: #9c27b0; cursor: pointer; transition: all 0.3s ease; min-width: 80px;">Body Sounds</button>
+                    </div>
+
+                    <div id="soundGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; padding: 0 20px;">
+                        <!-- Sound cards will be populated -->
+                    </div>
+
+                    <div id="soundMatchingGame" style="display: none; max-width: 600px; margin: 0 auto; padding: 20px;">
+                        <div style="background: white; padding: 30px; border-radius: 20px; text-align: center; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                            <div style="font-size: 1.5em; color: #7b1fa2; margin-bottom: 20px; font-weight: bold;" id="soundQuestionText">What sound does this make?</div>
+                            <button onclick="playSoundQuestion()" style="background: #ff6b35; color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 1.2em; font-weight: bold; cursor: pointer;">🔊 Play Sound</button>
+                        </div>
+                        <div id="soundAnswerOptions" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                            <!-- Options populated by JS -->
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px; text-align: center; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <div style="background: white; padding: 10px 20px; border-radius: 25px; color: #7b1fa2; font-weight: bold; border: 2px solid #7b1fa2;">
+                            🌟 Sounds Explored: <span id="soundCounter">0</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Initialize sound explorer
+            window.currentSoundMode = 'explore';
+            window.currentSoundCategory = 'all';
+            window.soundsExplored = new Set();
+            window.currentSoundQuestion = null;
+            window.soundAudioContext = null;
+            
+            setupSoundAudioContext();
+            renderSounds();
+        }
+
+        // Sound categories data
+        const soundCategories = {
+            animals: [
+                { id: 'cow', icon: '🐄', title: 'Cow', description: 'Moo moo!', frequency: 'low', soundType: 'oscillating' },
+                { id: 'cat', icon: '🐱', title: 'Cat', description: 'Meow meow!', frequency: 'medium', soundType: 'sliding' },
+                { id: 'dog', icon: '🐶', title: 'Dog', description: 'Woof woof!', frequency: 'medium', soundType: 'burst' },
+                { id: 'bird', icon: '🐦', title: 'Bird', description: 'Tweet tweet!', frequency: 'high', soundType: 'chirp' },
+                { id: 'lion', icon: '🦁', title: 'Lion', description: 'Roar!', frequency: 'low', soundType: 'growl' },
+                { id: 'duck', icon: '🦆', title: 'Duck', description: 'Quack quack!', frequency: 'medium', soundType: 'burst' },
+                { id: 'elephant', icon: '🐘', title: 'Elephant', description: 'Trumpet!', frequency: 'low', soundType: 'trumpet' },
+                { id: 'horse', icon: '🐴', title: 'Horse', description: 'Neigh!', frequency: 'medium', soundType: 'whinny' },
+                { id: 'pig', icon: '🐷', title: 'Pig', description: 'Oink oink!', frequency: 'medium', soundType: 'snort' },
+                { id: 'sheep', icon: '🐑', title: 'Sheep', description: 'Baa baa!', frequency: 'medium', soundType: 'bleat' },
+                { id: 'frog', icon: '🐸', title: 'Frog', description: 'Ribbit!', frequency: 'medium', soundType: 'croak' },
+                { id: 'bee', icon: '🐝', title: 'Bee', description: 'Buzz buzz!', frequency: 'high', soundType: 'buzz' }
+            ],
+            vehicles: [
+                { id: 'car', icon: '🚗', title: 'Car', description: 'Vroom vroom!', frequency: 'medium', soundType: 'engine' },
+                { id: 'train', icon: '🚂', title: 'Train', description: 'Choo choo!', frequency: 'low', soundType: 'whistle' },
+                { id: 'airplane', icon: '✈️', title: 'Airplane', description: 'Whoosh!', frequency: 'high', soundType: 'jet' },
+                { id: 'truck', icon: '🚚', title: 'Truck', description: 'Beep beep!', frequency: 'low', soundType: 'horn' },
+                { id: 'motorcycle', icon: '🏍️', title: 'Motorcycle', description: 'Vroom!', frequency: 'high', soundType: 'revving' },
+                { id: 'boat', icon: '⛵', title: 'Boat', description: 'Splash!', frequency: 'medium', soundType: 'water' },
+                { id: 'helicopter', icon: '🚁', title: 'Helicopter', description: 'Whirr!', frequency: 'medium', soundType: 'chopper' },
+                { id: 'bus', icon: '🚌', title: 'Bus', description: 'Hiss!', frequency: 'low', soundType: 'brake' },
+                { id: 'fire_truck', icon: '🚒', title: 'Fire Truck', description: 'Wee-ooo!', frequency: 'high', soundType: 'siren' },
+                { id: 'ambulance', icon: '🚑', title: 'Ambulance', description: 'Nee-naw!', frequency: 'high', soundType: 'siren2' }
+            ],
+            instruments: [
+                { id: 'piano', icon: '🎹', title: 'Piano', description: 'Ding ding!', frequency: 'medium', soundType: 'piano' },
+                { id: 'guitar', icon: '🎸', title: 'Guitar', description: 'Strum strum!', frequency: 'medium', soundType: 'string' },
+                { id: 'drums', icon: '🥁', title: 'Drums', description: 'Boom boom!', frequency: 'low', soundType: 'percussion' },
+                { id: 'trumpet', icon: '🎺', title: 'Trumpet', description: 'Toot toot!', frequency: 'high', soundType: 'brass' },
+                { id: 'violin', icon: '🎻', title: 'Violin', description: 'La la!', frequency: 'high', soundType: 'violin' },
+                { id: 'bell', icon: '🔔', title: 'Bell', description: 'Ring ring!', frequency: 'high', soundType: 'bell' },
+                { id: 'xylophone', icon: '🎵', title: 'Xylophone', description: 'Ting ting!', frequency: 'high', soundType: 'metal' },
+                { id: 'flute', icon: '🪈', title: 'Flute', description: 'Toot!', frequency: 'high', soundType: 'flute' }
+            ],
+            nature: [
+                { id: 'rain', icon: '🌧️', title: 'Rain', description: 'Pitter patter!', frequency: 'high', soundType: 'rain' },
+                { id: 'thunder', icon: '⛈️', title: 'Thunder', description: 'Rumble!', frequency: 'low', soundType: 'thunder' },
+                { id: 'wind', icon: '🌬️', title: 'Wind', description: 'Whoosh!', frequency: 'medium', soundType: 'wind' },
+                { id: 'ocean', icon: '🌊', title: 'Ocean', description: 'Crash!', frequency: 'low', soundType: 'waves' },
+                { id: 'fire', icon: '🔥', title: 'Fire', description: 'Crackle!', frequency: 'high', soundType: 'crackle' },
+                { id: 'leaves', icon: '🍃', title: 'Leaves', description: 'Rustle!', frequency: 'high', soundType: 'rustle' }
+            ],
+            household: [
+                { id: 'doorbell', icon: '🔔', title: 'Doorbell', description: 'Ding dong!', frequency: 'medium', soundType: 'doorbell' },
+                { id: 'phone', icon: '📞', title: 'Phone', description: 'Ring ring!', frequency: 'high', soundType: 'phone' },
+                { id: 'clock', icon: '⏰', title: 'Clock', description: 'Tick tock!', frequency: 'medium', soundType: 'tick' },
+                { id: 'vacuum', icon: '🪣', title: 'Vacuum', description: 'Whirr!', frequency: 'low', soundType: 'motor' },
+                { id: 'microwave', icon: '📱', title: 'Microwave', description: 'Beep!', frequency: 'high', soundType: 'beep' },
+                { id: 'washing_machine', icon: '🌀', title: 'Washer', description: 'Spin!', frequency: 'low', soundType: 'spin' }
+            ],
+            body_sounds: [
+                { id: 'clap', icon: '👏', title: 'Clap', description: 'Clap clap!', frequency: 'medium', soundType: 'clap' },
+                { id: 'stomp', icon: '🦶', title: 'Stomp', description: 'Thump thump!', frequency: 'low', soundType: 'thump' },
+                { id: 'whistle', icon: '😗', title: 'Whistle', description: 'Whee!', frequency: 'high', soundType: 'human_whistle' },
+                { id: 'snap', icon: '🫰', title: 'Snap', description: 'Snap snap!', frequency: 'high', soundType: 'snap' },
+                { id: 'kiss', icon: '😘', title: 'Kiss', description: 'Mwah!', frequency: 'medium', soundType: 'kiss' },
+                { id: 'hum', icon: '🎵', title: 'Hum', description: 'Hmm hmm!', frequency: 'medium', soundType: 'hum' }
+            ]
+        };
+
+        function setupSoundAudioContext() {
+            try {
+                window.soundAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio context not available');
+            }
+        }
+
+        function switchSoundMode(mode) {
+            document.querySelectorAll('.sound-mode-button').forEach(btn => {
+                btn.style.background = 'white';
+                btn.style.color = '#7b1fa2';
+            });
+            event.target.style.background = '#7b1fa2';
+            event.target.style.color = 'white';
+            
+            window.currentSoundMode = mode;
+            
+            const soundGrid = document.getElementById('soundGrid');
+            const matchingGame = document.getElementById('soundMatchingGame');
+            const categorySelector = document.getElementById('soundCategorySelector');
+            
+            if (mode === 'explore') {
+                soundGrid.style.display = 'grid';
+                matchingGame.style.display = 'none';
+                categorySelector.style.display = 'flex';
+                renderSounds();
+            } else if (mode === 'matching') {
+                soundGrid.style.display = 'none';
+                matchingGame.style.display = 'block';
+                categorySelector.style.display = 'none';
+                startSoundMatchingGame();
+            } else if (mode === 'record') {
+                soundGrid.style.display = 'grid';
+                matchingGame.style.display = 'none';
+                categorySelector.style.display = 'flex';
+                renderSounds();
+                alert('🎤 Recording mode coming soon! For now, enjoy exploring sounds! 🎤');
+            }
+        }
+
+        function selectSoundCategory(category) {
+            document.querySelectorAll('.sound-category-button').forEach(btn => {
+                btn.style.background = 'white';
+                btn.style.color = '#9c27b0';
+            });
+            event.target.style.background = '#9c27b0';
+            event.target.style.color = 'white';
+            
+            window.currentSoundCategory = category;
+            renderSounds();
+        }
+
+        function renderSounds() {
+            const grid = document.getElementById('soundGrid');
+            if (!grid) return;
+            
+            let soundsToShow;
+            if (window.currentSoundCategory === 'all') {
+                soundsToShow = [...soundCategories.animals, ...soundCategories.vehicles, 
+                              ...soundCategories.instruments, ...soundCategories.nature,
+                              ...soundCategories.household, ...soundCategories.body_sounds];
+            } else {
+                soundsToShow = soundCategories[window.currentSoundCategory] || [];
+            }
+            
+            grid.innerHTML = soundsToShow.map(sound => `
+                <div onclick="playAnimalSound('${sound.id}')" style="background: white; border-radius: 20px; padding: 25px; text-align: center; cursor: pointer; transition: all 0.4s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 3px solid transparent; min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden;" onmouseover="this.style.transform='translateY(-10px) scale(1.05)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.2)'; this.style.borderColor='#ff6b35';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'; this.style.borderColor='transparent';">
+                    <span style="font-size: 4em; margin-bottom: 15px; display: block; transition: all 0.3s ease;">${sound.icon}</span>
+                    <div style="font-size: 1.3em; font-weight: bold; margin-bottom: 8px;">${sound.title}</div>
+                    <div style="font-size: 0.9em; opacity: 0.8;">${sound.description}</div>
+                </div>
+            `).join('');
+        }
+
+        function playAnimalSound(soundId) {
+            const sound = findSoundById(soundId);
+            if (!sound) return;
+            
+            // Add to explored sounds
+            window.soundsExplored.add(soundId);
+            document.getElementById('soundCounter').textContent = window.soundsExplored.size;
+            
+            // Generate sound
+            generateSynthSound(sound.frequency, sound.soundType);
+            
+            // Speak the sound name
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(`${sound.title} says ${sound.description}`);
+                utterance.rate = 0.8;
+                utterance.pitch = 1.2;
+                utterance.volume = 0.7;
+                speechSynthesis.speak(utterance);
+            }
+            
+            // Visual celebration
+            createSoundCelebration();
+        }
+
+        function findSoundById(id) {
+            const allSounds = [...soundCategories.animals, ...soundCategories.vehicles, 
+                             ...soundCategories.instruments, ...soundCategories.nature,
+                             ...soundCategories.household, ...soundCategories.body_sounds];
+            return allSounds.find(sound => sound.id === id);
+        }
+
+        function generateSynthSound(frequency, soundType) {
+            if (!window.soundAudioContext) return;
+            
+            const oscillator = window.soundAudioContext.createOscillator();
+            const gainNode = window.soundAudioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(window.soundAudioContext.destination);
+            
+            let baseFreq;
+            switch(frequency) {
+                case 'low': baseFreq = 150; break;
+                case 'medium': baseFreq = 300; break;
+                case 'high': baseFreq = 600; break;
+                default: baseFreq = 300;
+            }
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(baseFreq, window.soundAudioContext.currentTime);
+            
+            gainNode.gain.setValueAtTime(0, window.soundAudioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.3, window.soundAudioContext.currentTime + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, window.soundAudioContext.currentTime + 0.8);
+            
+            oscillator.start(window.soundAudioContext.currentTime);
+            oscillator.stop(window.soundAudioContext.currentTime + 0.8);
+        }
+
+        function createSoundCelebration() {
+            const stars = ['🌟', '✨', '⭐', '💫', '🎵', '🎶'];
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.style.cssText = `
+                        position: fixed; pointer-events: none; font-size: 2.5em; z-index: 1000;
+                        animation: floatUp 2s ease-out forwards;
+                    `;
+                    star.textContent = stars[Math.floor(Math.random() * stars.length)];
+                    star.style.left = (Math.random() * window.innerWidth) + 'px';
+                    star.style.top = (window.innerHeight - 100) + 'px';
+                    document.body.appendChild(star);
+                    
+                    setTimeout(() => {
+                        if (star.parentNode) {
+                            star.parentNode.removeChild(star);
+                        }
+                    }, 2000);
+                }, i * 150);
+            }
+        }
+
+        function startSoundMatchingGame() {
+            const allSounds = [...soundCategories.animals, ...soundCategories.vehicles, 
+                             ...soundCategories.instruments, ...soundCategories.nature,
+                             ...soundCategories.household, ...soundCategories.body_sounds];
+            window.currentSoundQuestion = allSounds[Math.floor(Math.random() * allSounds.length)];
+            
+            document.getElementById('soundQuestionText').textContent = 'What sound does this make?';
+            
+            const options = [window.currentSoundQuestion];
+            while (options.length < 4) {
+                const randomSound = allSounds[Math.floor(Math.random() * allSounds.length)];
+                if (!options.includes(randomSound)) {
+                    options.push(randomSound);
+                }
+            }
+            
+            // Shuffle options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            document.getElementById('soundAnswerOptions').innerHTML = options.map(option => `
+                <div onclick="checkSoundAnswer('${option.id}')" style="background: white; padding: 20px; border-radius: 15px; text-align: center; cursor: pointer; border: 3px solid transparent; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='#7b1fa2';" onmouseout="this.style.transform='scale(1)'; this.style.borderColor='transparent';">
+                    <div style="font-size: 2.5em; margin-bottom: 10px;">${option.icon}</div>
+                    <div style="font-weight: bold;">${option.title}</div>
+                </div>
+            `).join('');
+        }
+
+        function playSoundQuestion() {
+            if (window.currentSoundQuestion) {
+                playAnimalSound(window.currentSoundQuestion.id);
+            }
+        }
+
+        function checkSoundAnswer(answerId) {
+            const correct = answerId === window.currentSoundQuestion.id;
+            const card = event.target.closest('div');
+            
+            if (correct) {
+                card.style.background = '#c8e6c9';
+                card.style.borderColor = '#4caf50';
+                card.style.transform = 'scale(1.1)';
+                
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance('🎉 Correct! Great job! 🎉');
+                    speechSynthesis.speak(utterance);
+                }
+                
+                setTimeout(() => {
+                    startSoundMatchingGame();
+                }, 2000);
+            } else {
+                card.style.background = '#ffcdd2';
+                setTimeout(() => {
+                    card.style.background = 'white';
+                }, 500);
+                
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance('Try again!');
+                    speechSynthesis.speak(utterance);
+                }
+            }
+        }
+
+        function loadVisualSchedule() {
+            document.getElementById('visualScheduleContent').innerHTML = `
+                <div style="padding: 20px; background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); min-height: 100vh;">
+                    <div style="text-align: center; margin-bottom: 30px; color: #2e7d32;">
+                        <h1 style="font-size: 2.5em; font-weight: bold; margin-bottom: 10px;">📅 My Daily Schedule 📅</h1>
+                        <p>Drag activities to build your day!</p>
+                    </div>
+
+                    <div style="display: flex; gap: 30px; max-width: 1200px; margin: 0 auto; flex-wrap: wrap;">
+                        <!-- Activity Bank -->
+                        <div style="flex: 1; min-width: 300px; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 3px solid #4caf50;">
+                            <div style="text-align: center; margin-bottom: 20px; color: #2e7d32; font-size: 1.3em; font-weight: bold;">📦 Activity Bank</div>
+                            <div id="scheduleActivityBank" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px;">
+                                <!-- Activities populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Schedule Area -->
+                        <div style="flex: 2; min-width: 400px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <div style="color: #2e7d32; font-size: 1.5em; font-weight: bold;">Today's Schedule</div>
+                                <div style="display: flex; gap: 10px;">
+                                    <button onclick="clearSchedule()" style="padding: 10px 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; background: #ff5722; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='#e64a19'; this.style.transform='scale(1.05)';" onmouseout="this.style.background='#ff5722'; this.style.transform='scale(1)';">🗑️ Clear</button>
+                                    <button onclick="reviewSchedule()" style="padding: 10px 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; background: #2196f3; color: white; transition: all 0.3s ease;" onmouseover="this.style.background='#1976d2'; this.style.transform='scale(1.05)';" onmouseout="this.style.background='#2196f3'; this.style.transform='scale(1)';">▶️ Review</button>
+                                </div>
+                            </div>
+                            
+                            <div id="scheduleTimeline" style="background: white; border-radius: 20px; padding: 20px; min-height: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 3px solid #4caf50;">
+                                <!-- Timeline populated by JS -->
+                            </div>
+
+                            <div style="margin-top: 20px; text-align: center;">
+                                <div>Progress: <span id="scheduleCompletedCount">0</span> of <span id="scheduleTotalCount">0</span> activities completed!</div>
+                                <div style="background: #e0e0e0; height: 20px; border-radius: 10px; overflow: hidden; margin: 10px 0;">
+                                    <div id="scheduleProgressFill" style="background: linear-gradient(90deg, #4caf50, #81c784); height: 100%; width: 0%; transition: width 0.5s ease; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.8em;">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Celebration Overlay -->
+                    <div id="scheduleCelebrationOverlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(76,175,80,0.9); display: none; align-items: center; justify-content: center; z-index: 1000;">
+                        <div style="background: white; padding: 40px; border-radius: 20px; text-align: center;">
+                            <h2>🎉 Amazing Job! 🎉</h2>
+                            <p>You completed all your activities today!</p>
+                            <button onclick="hideScheduleCelebration()" style="background: #2196f3; color: white; border: none; padding: 15px 30px; border-radius: 15px; font-weight: bold; margin-top: 15px; cursor: pointer;">Awesome!</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Initialize schedule
+            window.scheduleData = {};
+            window.completedScheduleActivities = new Set();
+            
+            renderScheduleActivityBank();
+            renderScheduleTimeline();
+            updateScheduleProgress();
+            setupScheduleDragAndDrop();
+        }
+
+        // Schedule activities data
+        const scheduleActivities = [
+            { id: 'wake_up', icon: '🌅', title: 'Wake Up', sound: 'Good morning!' },
+            { id: 'brush_teeth', icon: '🦷', title: 'Brush Teeth', sound: 'Time to brush teeth!' },
+            { id: 'breakfast', icon: '🥞', title: 'Breakfast', sound: 'Time to eat breakfast!' },
+            { id: 'get_dressed', icon: '👕', title: 'Get Dressed', sound: 'Time to get dressed!' },
+            { id: 'school', icon: '🏫', title: 'School', sound: 'Time for school!' },
+            { id: 'lunch', icon: '🥪', title: 'Lunch', sound: 'Time for lunch!' },
+            { id: 'play', icon: '🎮', title: 'Play Time', sound: 'Time to play!' },
+            { id: 'snack', icon: '🍎', title: 'Snack', sound: 'Time for a snack!' },
+            { id: 'homework', icon: '📚', title: 'Homework', sound: 'Time for homework!' },
+            { id: 'dinner', icon: '🍽️', title: 'Dinner', sound: 'Time for dinner!' },
+            { id: 'bath', icon: '🛁', title: 'Bath Time', sound: 'Time for a bath!' },
+            { id: 'bedtime', icon: '🌙', title: 'Bedtime', sound: 'Time for bed!' },
+            { id: 'read', icon: '📖', title: 'Reading', sound: 'Time to read!' },
+            { id: 'exercise', icon: '🏃', title: 'Exercise', sound: 'Time to exercise!' },
+            { id: 'clean', icon: '🧹', title: 'Clean Up', sound: 'Time to clean up!' },
+            { id: 'music', icon: '🎵', title: 'Music Time', sound: 'Time for music!' },
+            { id: 'outside', icon: '🌳', title: 'Outside Time', sound: 'Time to go outside!' },
+            { id: 'art', icon: '🎨', title: 'Art Time', sound: 'Time for art!' },
+            { id: 'tv', icon: '📺', title: 'TV Time', sound: 'Time to watch TV!' },
+            { id: 'nap', icon: '😴', title: 'Nap Time', sound: 'Time for a nap!' }
+        ];
+
+        const scheduleTimeSlots = [
+            '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
+            '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM',
+            '7:00 PM', '8:00 PM'
+        ];
+
+        function renderScheduleActivityBank() {
+            const bank = document.getElementById('scheduleActivityBank');
+            if (!bank) return;
+            
+            bank.innerHTML = scheduleActivities.map(activity => `
+                <div draggable="true" data-activity="${activity.id}" style="background: #f1f8e9; border-radius: 15px; padding: 15px; text-align: center; cursor: grab; transition: all 0.3s ease; border: 2px solid #81c784; min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.2)'; this.style.borderColor='#4caf50';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'; this.style.borderColor='#81c784';">
+                    <span style="font-size: 2.5em; margin-bottom: 8px; display: block;">${activity.icon}</span>
+                    <div style="font-size: 0.9em; font-weight: bold; color: #2e7d32;">${activity.title}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderScheduleTimeline() {
+            const timeline = document.getElementById('scheduleTimeline');
+            if (!timeline) return;
+            
+            timeline.innerHTML = scheduleTimeSlots.map((time, index) => {
+                const activity = window.scheduleData[index];
+                const isCompleted = window.completedScheduleActivities.has(index);
+                
+                return `
+                    <div data-slot="${index}" style="display: flex; align-items: center; margin-bottom: 15px; padding: 15px; background: ${activity ? '#c8e6c9' : '#f8f9fa'}; border-radius: 15px; border: 3px ${activity ? 'solid' : 'dashed'} ${activity ? '#4caf50' : '#81c784'}; min-height: 100px; transition: all 0.3s ease; position: relative;" ondragover="event.preventDefault(); this.style.backgroundColor='#e8f5e8'; this.style.borderColor='#4caf50'; this.style.borderStyle='solid'; this.style.borderWidth='4px'; this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 25px rgba(76,175,80,0.3)';" ondragleave="this.style.backgroundColor='${activity ? '#c8e6c9' : '#f8f9fa'}'; this.style.borderColor='${activity ? '#4caf50' : '#81c784'}'; this.style.borderStyle='${activity ? 'solid' : 'dashed'}'; this.style.borderWidth='3px'; this.style.transform='scale(1)'; this.style.boxShadow='none';" ondrop="dropScheduleActivity(event, ${index})">
+                        ${!activity ? `<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #81c784; font-weight: bold; font-size: 1.1em; opacity: 0.7; pointer-events: none; z-index: 1;">Drop activity here</div>` : ''}
+                        <div style="background: #4caf50; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; margin-right: 15px; min-width: 80px; text-align: center;">${time}</div>
+                        <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+                            ${activity ? `
+                                <div onclick="toggleScheduleCompletion(${index})" style="background: white; padding: 15px; border-radius: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); border: 2px solid #4caf50; cursor: pointer; transition: all 0.3s ease; flex: 1; ${isCompleted ? 'opacity: 0.6; background: #e8f5e8; border-color: #81c784;' : ''}" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.2)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 3px 10px rgba(0,0,0,0.1)';">
+                                    <span style="font-size: 2em; ${isCompleted ? 'filter: grayscale(50%);' : ''}">${activity.icon}</span>
+                                    <div style="font-size: 1.1em; color: #2e7d32; font-weight: bold;">${activity.title}</div>
+                                    <div style="margin-left: auto;">
+                                        <button onclick="event.stopPropagation(); toggleScheduleCompletion(${index})" style="background: ${isCompleted ? '#81c784' : '#4caf50'}; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1.2em; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
+                                            ${isCompleted ? '✓' : '○'}
+                                        </button>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function setupScheduleDragAndDrop() {
+            const activityCards = document.querySelectorAll('[data-activity]');
+            
+            activityCards.forEach(card => {
+                card.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', card.dataset.activity);
+                    card.style.opacity = '0.5';
+                    card.style.transform = 'rotate(5deg)';
+                });
+
+                card.addEventListener('dragend', (e) => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'rotate(0deg)';
+                });
+            });
+        }
+
+        function dropScheduleActivity(e, slotIndex) {
+            e.preventDefault();
+            const activityId = e.dataTransfer.getData('text/plain');
+            const activity = scheduleActivities.find(a => a.id === activityId);
+            
+            if (activity) {
+                window.scheduleData[slotIndex] = activity;
+                renderScheduleTimeline();
+                updateScheduleProgress();
+                setupScheduleDragAndDrop();
+                
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(`Added ${activity.title} to ${scheduleTimeSlots[slotIndex]}`);
+                    speechSynthesis.speak(utterance);
+                }
+            }
+            
+            // Reset drag-over styling
+            const slot = e.currentTarget;
+            slot.style.backgroundColor = window.scheduleData[slotIndex] ? '#c8e6c9' : '#f8f9fa';
+            slot.style.borderColor = window.scheduleData[slotIndex] ? '#4caf50' : '#81c784';
+            slot.style.borderStyle = window.scheduleData[slotIndex] ? 'solid' : 'dashed';
+            slot.style.borderWidth = '3px';
+            slot.style.transform = 'scale(1)';
+            slot.style.boxShadow = 'none';
+        }
+
+        function toggleScheduleCompletion(slotIndex) {
+            if (window.completedScheduleActivities.has(slotIndex)) {
+                window.completedScheduleActivities.delete(slotIndex);
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance('Activity unchecked');
+                    speechSynthesis.speak(utterance);
+                }
+            } else {
+                window.completedScheduleActivities.add(slotIndex);
+                const activity = window.scheduleData[slotIndex];
+                if (activity && 'speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(`Great job completing ${activity.title}!`);
+                    speechSynthesis.speak(utterance);
+                }
+                createScheduleCelebrationEffect();
+            }
+            
+            renderScheduleTimeline();
+            setupScheduleDragAndDrop();
+            updateScheduleProgress();
+            
+            // Check if all activities are completed
+            const scheduledCount = Object.keys(window.scheduleData).length;
+            if (scheduledCount > 0 && window.completedScheduleActivities.size === scheduledCount) {
+                showFullScheduleCelebration();
+            }
+        }
+
+        function updateScheduleProgress() {
+            const scheduledCount = Object.keys(window.scheduleData).length;
+            const completedCount = window.completedScheduleActivities.size;
+            const percentage = scheduledCount > 0 ? Math.round((completedCount / scheduledCount) * 100) : 0;
+
+            const totalCountEl = document.getElementById('scheduleTotalCount');
+            const completedCountEl = document.getElementById('scheduleCompletedCount');
+            const progressFillEl = document.getElementById('scheduleProgressFill');
+            
+            if (totalCountEl) totalCountEl.textContent = scheduledCount;
+            if (completedCountEl) completedCountEl.textContent = completedCount;
+            if (progressFillEl) {
+                progressFillEl.style.width = percentage + '%';
+                progressFillEl.textContent = percentage + '%';
+            }
+        }
+
+        function clearSchedule() {
+            window.scheduleData = {};
+            window.completedScheduleActivities.clear();
+            renderScheduleTimeline();
+            setupScheduleDragAndDrop();
+            updateScheduleProgress();
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance('Schedule cleared');
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function reviewSchedule() {
+            const scheduledItems = Object.entries(window.scheduleData);
+            if (scheduledItems.length === 0) {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance('Your schedule is empty. Add some activities first!');
+                    speechSynthesis.speak(utterance);
+                }
+                return;
+            }
+
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance('Here is your schedule for today:');
+                speechSynthesis.speak(utterance);
+                
+                scheduledItems.forEach(([slotIndex, activity], index) => {
+                    const timeSlot = scheduleTimeSlots[parseInt(slotIndex)];
+                    setTimeout(() => {
+                        const utterance2 = new SpeechSynthesisUtterance(`At ${timeSlot}, ${activity.sound}`);
+                        speechSynthesis.speak(utterance2);
+                    }, (index + 1) * 2000);
+                });
+            }
+        }
+
+        function createScheduleCelebrationEffect() {
+            const stars = ['⭐', '✨', '🌟', '💫', '🎉'];
+            for (let i = 0; i < 4; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.style.cssText = `
+                        position: fixed; pointer-events: none; font-size: 3em; z-index: 999;
+                        animation: floatUp 3s ease-out forwards;
+                    `;
+                    star.textContent = stars[Math.floor(Math.random() * stars.length)];
+                    star.style.left = Math.random() * window.innerWidth + 'px';
+                    star.style.top = (window.innerHeight - 100) + 'px';
+                    document.body.appendChild(star);
+                    
+                    setTimeout(() => {
+                        if (star.parentNode) {
+                            star.parentNode.removeChild(star);
+                        }
+                    }, 3000);
+                }, i * 200);
+            }
+        }
+
+        function showFullScheduleCelebration() {
+            const overlay = document.getElementById('scheduleCelebrationOverlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance('Congratulations! You completed your entire schedule today! You did an amazing job!');
+                    speechSynthesis.speak(utterance);
+                }
+                
+                for (let i = 0; i < 15; i++) {
+                    setTimeout(() => createScheduleCelebrationEffect(), i * 100);
+                }
+            }
+        }
+
+        function hideScheduleCelebration() {
+            const overlay = document.getElementById('scheduleCelebrationOverlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+
+        function goHome() {
+            // Hide all apps
+            const containers = document.querySelectorAll('.app-container');
+            containers.forEach(container => container.classList.remove('active'));
+            
+            // Show main menu
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('backButton').style.display = 'none';
+        }
+
+        // Add the missing CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes celebrateSelection {
+                0% { transform: scale(0.8); opacity: 0; }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); opacity: 1; }
+            }
+            
+            @keyframes starfall {
+                0% {
+                    transform: translateY(-20px) scale(0);
+                    opacity: 1;
+                }
+                50% {
+                    transform: translateY(20px) scale(1);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(100px) scale(0);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
