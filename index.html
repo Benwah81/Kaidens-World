@@ -946,14 +946,14 @@ function loadGames() {
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
             margin-top: 15px;
         }
 
         .stat-item {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 15px;
+            padding: 12px;
             border-radius: 15px;
             border: 2px solid rgba(255,255,255,0.3);
             color: white;
@@ -983,6 +983,7 @@ function loadGames() {
         .stat-item:nth-child(2) { animation-delay: 0.4s; }
         .stat-item:nth-child(3) { animation-delay: 0.6s; }
         .stat-item:nth-child(4) { animation-delay: 0.8s; }
+        .stat-item:nth-child(5) { animation-delay: 1.0s; }
 
         .stat-number {
             font-size: 2em;
@@ -1065,9 +1066,9 @@ function loadGames() {
 
         .app-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            max-width: 1000px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
             width: 100%;
             margin-bottom: 40px;
             animation: fadeInScale 1.5s ease-out;
@@ -1105,6 +1106,7 @@ function loadGames() {
         .app-card:nth-child(1) { --card-delay: 0.8s; }
         .app-card:nth-child(2) { --card-delay: 1.0s; }
         .app-card:nth-child(3) { --card-delay: 1.2s; }
+        .app-card:nth-child(4) { --card-delay: 1.4s; }
 
         @keyframes slideInUp {
             0% {
@@ -1129,6 +1131,7 @@ function loadGames() {
         .app-card:nth-child(1) .app-icon { --float-delay: 0s; }
         .app-card:nth-child(2) .app-icon { --float-delay: 1s; }
         .app-card:nth-child(3) .app-icon { --float-delay: 2s; }
+        .app-card:nth-child(4) .app-icon { --float-delay: 3s; }
 
         @keyframes float {
             0%, 100% {
@@ -1422,6 +1425,10 @@ function loadGames() {
                 <div class="stat-item">
                     <span class="stat-number" id="totalActivities">20</span>
                     <span class="stat-label">Schedule Activities</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="totalGames">4</span>
+                    <span class="stat-label">Fun Games</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number" id="sessionsToday">0</span>
