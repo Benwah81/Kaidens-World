@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaiden's World - Choice Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1976d2;
+        }
+
+        .app-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-button {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: 3px solid #1976d2;
+            border-radius: 15px;
+            background: white;
+            color: #1976d2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-button.home {
+            background: #ff9800;
+            color: white;
+            border-color: #ff9800;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1000px;
+        }
+
+        .tab-button {
+            padding: 15px 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: 3px solid #1976d2;
+            border-radius: 20px;
+            background: white;
+            color: #1976d2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .tab-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .tab-button.active {
+            background: #1976d2;
+            color: white;
+            box-shadow: 0 5px 15px rgba(25,118,210,0.3);
+        }
+
+        .choice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .choice-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .choice-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-color: #4caf50;
+        }
+
+        .choice-card.selected {
+            background: #e8f5e8;
+            border-color: #4caf50;
+            transform: scale(1.05);
+        }
+
+        .choice-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .choice-text {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .choice-subtext {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .feedback-area {
+            margin-top: 30px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .selection-display {
+            background: #4caf50;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(76,175,80,0.3);
+            animation: celebrateSelection 0.6s ease;
+        }
+
+        @keyframes celebrateSelection {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .celebration-stars {
+            position: fixed;
+            pointer-events: none;
+            font-size: 2em;
+            color: #ffd700;
+            animation: starfall 1.5s ease-out forwards;
+        }
+
+        @keyframes starfall {
+            0% {
+                transform: translateY(-20px) scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(20px) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .choice-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            .choice-card {
+                min-height: 140px;
+                padding: 15px;
+            }
+            .choice-icon {
+                font-size: 3em;
+            }
+            .choice-text {
+                font-size: 1.2em;
+            }
+            .app-title {
+                font-size: 2em;
+            }
+            .tab-button {
+                font-size: 0.9em;
+                padding: 12px 15px;
+                min-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <h1 class="app-title">🌟 Kaiden's World - Choice Board 🌟</h1>
+        <p>Tell us what you want!</p>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="index.html" class="nav-button home">🏠 Home</a>
+    </div>
+
+    <div class="category-tabs">
+        <button class="tab-button active" data-category="needs">I Need</button>
+        <button class="tab-button" data-category="feelings">I Feel</button>
+        <button class="tab-button" data-category="activities">I Want To</button>
+        <button class="tab-button" data-category="wants">I Want</button>
+        <button class="tab-button" data-category="people">People</button>
+        <button class="tab-button" data-category="places">Places</button>
+        <button class="tab-button" data-category="yesno">Yes/No</button>
+    </div>
+
+    <div class="choice-grid" id="choiceGrid">
+        <!-- Choices will be populated by JavaScript -->
+    </div>
+
+    <div class="feedback-area" id="feedbackArea">
+        <p style="color: #666; font-size: 1.1em;">👆 Tap a card to make your choice</p>
+    </div>
+
+    <script>
+        // EXPANDED Choice data with all new categories
+        const choiceCategories = {
+            needs: [
+                { id: 'hungry', icon: '🍎', text: 'Hungry', subtext: 'I want food' },
+                { id: 'thirsty', icon: '💧', text: 'Thirsty', subtext: 'I want drink' },
+                { id: 'bathroom', icon: '🚽', text: 'Bathroom', subtext: 'I need to go' },
+                { id: 'tired', icon: '😴', text: 'Tired', subtext: 'I want rest' },
+                { id: 'help', icon: '🤝', text: 'Help', subtext: 'I need help' },
+                { id: 'break', icon: '⸻', text: 'Break', subtext: 'I need space' },
+                { id: 'sick', icon: '🤒', text: 'Sick', subtext: 'I feel sick' },
+                { id: 'hurt', icon: '🩹', text: 'Hurt', subtext: 'Something hurts' },
+                { id: 'cold', icon: '🥶', text: 'Cold', subtext: 'I am cold' },
+                { id: 'hot', icon: '🥵', text: 'Hot', subtext: 'I am hot' },
+                { id: 'loud', icon: '🔊', text: 'Too Loud', subtext: "It's too loud" },
+                { id: 'quiet', icon: '🔇', text: 'Too Quiet', subtext: 'Need more sound' }
+            ],
+            feelings: [
+                { id: 'happy', icon: '😊', text: 'Happy', subtext: 'I feel good' },
+                { id: 'sad', icon: '😢', text: 'Sad', subtext: 'I feel sad' },
+                { id: 'angry', icon: '😠', text: 'Angry', subtext: 'I feel mad' },
+                { id: 'scared', icon: '😰', text: 'Scared', subtext: 'I feel scared' },
+                { id: 'excited', icon: '🤩', text: 'Excited', subtext: 'I feel excited' },
+                { id: 'calm', icon: '😌', text: 'Calm', subtext: 'I feel peaceful' },
+                { id: 'frustrated', icon: '😤', text: 'Frustrated', subtext: 'I am frustrated' },
+                { id: 'proud', icon: '😊', text: 'Proud', subtext: 'I feel proud' },
+                { id: 'confused', icon: '😕', text: 'Confused', subtext: "I don't understand" },
+                { id: 'silly', icon: '😜', text: 'Silly', subtext: 'I feel silly' },
+                { id: 'bored', icon: '😑', text: 'Bored', subtext: 'I am bored' },
+                { id: 'worried', icon: '😟', text: 'Worried', subtext: 'I feel worried' }
+            ],
+            activities: [
+                { id: 'play', icon: '🎮', text: 'Play', subtext: 'I want to play' },
+                { id: 'read', icon: '📚', text: 'Read', subtext: 'I want books' },
+                { id: 'outside', icon: '🌳', text: 'Outside', subtext: 'I want fresh air' },
+                { id: 'music', icon: '🎵', text: 'Music', subtext: 'I want music' },
+                { id: 'draw', icon: '🎨', text: 'Draw', subtext: 'I want to create' },
+                { id: 'hug', icon: '🤗', text: 'Hug', subtext: 'I want comfort' },
+                { id: 'swing', icon: '🎠', text: 'Swing', subtext: 'I want to swing' },
+                { id: 'run', icon: '🏃', text: 'Run', subtext: 'I want to run' },
+                { id: 'build', icon: '🧱', text: 'Build', subtext: 'I want to build' },
+                { id: 'cook', icon: '👨‍🍳', text: 'Cook', subtext: 'I want to cook' },
+                { id: 'dance', icon: '💃', text: 'Dance', subtext: 'I want to dance' },
+                { id: 'watch', icon: '📺', text: 'Watch TV', subtext: 'I want to watch' }
+            ],
+            wants: [
+                { id: 'snack', icon: '🍪', text: 'Snack', subtext: 'I want a snack' },
+                { id: 'toy', icon: '🧸', text: 'Toy', subtext: 'I want my toy' },
+                { id: 'ipad', icon: '📱', text: 'iPad', subtext: 'I want iPad' },
+                { id: 'blanket', icon: '🛏️', text: 'Blanket', subtext: 'I want my blanket' },
+                { id: 'water', icon: '🚰', text: 'Water', subtext: 'I want water' },
+                { id: 'juice', icon: '🧃', text: 'Juice', subtext: 'I want juice' },
+                { id: 'fruit', icon: '🍌', text: 'Fruit', subtext: 'I want fruit' },
+                { id: 'candy', icon: '🍬', text: 'Candy', subtext: 'I want candy' },
+                { id: 'book', icon: '📖', text: 'Book', subtext: 'I want a book' },
+                { id: 'ball', icon: '⚽', text: 'Ball', subtext: 'I want ball' },
+                { id: 'car', icon: '🚗', text: 'Toy Car', subtext: 'I want my car' },
+                { id: 'blocks', icon: '🧱', text: 'Blocks', subtext: 'I want blocks' }
+            ],
+            people: [
+                { id: 'mom', icon: '👩', text: 'Mom', subtext: 'I want Mom' },
+                { id: 'dad', icon: '👨', text: 'Dad', subtext: 'I want Dad' },
+                { id: 'sister', icon: '👧', text: 'Sister', subtext: 'I want Sister' },
+                { id: 'brother', icon: '👦', text: 'Brother', subtext: 'I want Brother' },
+                { id: 'grandma', icon: '👵', text: 'Grandma', subtext: 'I want Grandma' },
+                { id: 'grandpa', icon: '👴', text: 'Grandpa', subtext: 'I want Grandpa' },
+                { id: 'teacher', icon: '👩‍🏫', text: 'Teacher', subtext: 'I want Teacher' },
+                { id: 'friend', icon: '👫', text: 'Friend', subtext: 'I want my friend' }
+            ],
+            places: [
+                { id: 'home', icon: '🏠', text: 'Home', subtext: 'I want to go home' },
+                { id: 'school', icon: '🏫', text: 'School', subtext: 'I want to go to school' },
+                { id: 'park', icon: '🌳', text: 'Park', subtext: 'I want to go to park' },
+                { id: 'store', icon: '🏪', text: 'Store', subtext: 'I want to go to store' },
+                { id: 'playground', icon: '🎪', text: 'Playground', subtext: 'I want playground' },
+                { id: 'library', icon: '📚', text: 'Library', subtext: 'I want library' },
+                { id: 'outside', icon: '🌤️', text: 'Outside', subtext: 'I want to go outside' },
+                { id: 'room', icon: '🛏️', text: 'My Room', subtext: 'I want my room' }
+            ],
+            yesno: [
+                { id: 'yes', icon: '✅', text: 'Yes', subtext: 'Yes!' },
+                { id: 'no', icon: '❌', text: 'No', subtext: 'No!' },
+                { id: 'maybe', icon: '🤔', text: 'Maybe', subtext: 'Maybe' },
+                { id: 'more', icon: '➕', text: 'More', subtext: 'I want more' },
+                { id: 'alldone', icon: '✋', text: 'All Done', subtext: 'I am all done' },
+                { id: 'wait', icon: '⏸️', text: 'Wait', subtext: 'Please wait' }
+            ]
+        };
+
+        let currentCategory = 'needs';
+        let selectedChoice = null;
+
+        // Initialize the app
+        function init() {
+            console.log('🌟 Kaiden\'s World Choice Board - Initializing...');
+            renderChoices(currentCategory);
+            setupTabListeners();
+            console.log('✅ Choice Board ready!');
+        }
+
+        // Render choice cards for current category
+        function renderChoices(category) {
+            const grid = document.getElementById('choiceGrid');
+            const choices = choiceCategories[category];
+            
+            grid.innerHTML = choices.map(choice => `
+                <div class="choice-card" data-choice="${choice.id}" data-text="${choice.text}" data-category="${category}">
+                    <span class="choice-icon">${choice.icon}</span>
+                    <div class="choice-text">${choice.text}</div>
+                    <div class="choice-subtext">${choice.subtext}</div>
+                </div>
+            `).join('');
+            
+            // Add click listeners using event delegation
+            setupChoiceListeners();
+        }
+        
+        // Setup click listeners for choice cards
+        function setupChoiceListeners() {
+            document.querySelectorAll('.choice-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const choiceId = this.dataset.choice;
+                    const choiceText = this.dataset.text;
+                    const category = this.dataset.category;
+                    selectChoice(choiceId, choiceText, category);
+                });
+            });
+        }
+
+        // Setup tab button listeners
+        function setupTabListeners() {
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    // Update active tab
+                    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    
+                    // Switch category
+                    currentCategory = e.target.dataset.category;
+                    renderChoices(currentCategory);
+                    
+                    // Clear previous selection
+                    clearSelection();
+                });
+            });
+        }
+
+        // Handle choice selection
+        function selectChoice(choiceId, choiceText, category) {
+            console.log('Choice selected:', choiceText);
+            
+            // Clear previous selection
+            document.querySelectorAll('.choice-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Mark current selection
+            document.querySelector(`[data-choice="${choiceId}"]`).classList.add('selected');
+            
+            // Show feedback
+            showSelectionFeedback(choiceText);
+            
+            // Create celebration effect
+            createCelebrationEffect();
+            
+            // Speak the choice
+            speakChoice(choiceText);
+            
+            selectedChoice = { id: choiceId, text: choiceText, category: category };
+        }
+
+        // Show selection feedback
+        function showSelectionFeedback(text) {
+            const feedbackArea = document.getElementById('feedbackArea');
+            feedbackArea.innerHTML = `
+                <div class="selection-display">
+                    ✨ ${text}! ✨
+                </div>
+            `;
+        }
+
+        // Clear selection feedback
+        function clearSelection() {
+            const feedbackArea = document.getElementById('feedbackArea');
+            feedbackArea.innerHTML = '<p style="color: #666; font-size: 1.1em;">👆 Tap a card to make your choice</p>';
+            selectedChoice = null;
+        }
+
+        // Create visual celebration effect
+        function createCelebrationEffect() {
+            const stars = ['⭐', '✨', '🌟', '💫'];
+            
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.className = 'celebration-stars';
+                    star.textContent = stars[Math.floor(Math.random() * stars.length)];
+                    star.style.left = Math.random() * window.innerWidth + 'px';
+                    star.style.top = '10px';
+                    document.body.appendChild(star);
+                    
+                    setTimeout(() => {
+                        if (star.parentNode) {
+                            star.parentNode.removeChild(star);
+                        }
+                    }, 1500);
+                }, i * 100);
+            }
+        }
+
+        // Text-to-speech for choice
+        function speakChoice(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.8;
+                utterance.pitch = 1.1;
+                utterance.volume = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
