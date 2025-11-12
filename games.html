@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Fun Games - Kaiden's World</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #ff6b35;
+            border: 2px solid #ff6b35;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-button:hover {
+            background: white;
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: 60px;
+            color: #ff6b35;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(45deg, #ff6b35, #f7931e, #ffd700, #4caf50, #2196f3, #9c27b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .game-card.sunny {
+            border: 3px solid #ffd700;
+        }
+
+        .game-card.luna {
+            border: 3px solid #9c27b0;
+        }
+
+        .game-card.buddy {
+            border: 3px solid #4caf50;
+        }
+
+        .game-card.splash {
+            border: 3px solid #2196f3;
+        }
+
+        .game-character {
+            font-size: 6em;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: characterBreathe 3s ease-in-out infinite;
+        }
+
+        @keyframes characterBreathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .game-character:hover {
+            animation: characterExcited 0.6s ease-in-out infinite;
+        }
+
+        @keyframes characterExcited {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(-5deg); }
+            75% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .game-character.talking {
+            animation: characterTalk 0.3s ease-in-out infinite;
+        }
+
+        @keyframes characterTalk {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .game-title {
+            color: #ff6b35;
+            margin: 15px 0;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .speech-bubble {
+            background: white;
+            border: 3px solid #ff6b35;
+            border-radius: 20px;
+            padding: 15px 25px;
+            margin: 20px 0;
+            position: relative;
+            animation: bubblePop 0.5s ease-out;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            margin-left: -15px;
+            width: 0;
+            height: 0;
+            border: 15px solid transparent;
+            border-top-color: #ff6b35;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -9px;
+            left: 50%;
+            margin-left: -12px;
+            width: 0;
+            height: 0;
+            border: 12px solid transparent;
+            border-top-color: white;
+        }
+
+        @keyframes bubblePop {
+            0% { transform: scale(0.3); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .game-button {
+            background: linear-gradient(135deg, #ff6b35, #ff8a50);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255,107,53,0.3);
+            margin: 10px;
+        }
+
+        .game-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(255,107,53,0.4);
+        }
+
+        .game-play-area {
+            margin-top: 40px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .game-play-area.active {
+            display: block;
+        }
+
+        .game-content {
+            min-height: 200px;
+            margin: 20px 0;
+        }
+
+        .progress-area {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 15px;
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .score-item {
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .score-sunny { background: #ffd700; }
+        .score-luna { background: #9c27b0; }
+        .score-buddy { background: #4caf50; }
+        .score-splash { background: #2196f3; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes celebrationFloat {
+            0% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-300px) rotate(360deg); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .game-character {
+                font-size: 4em;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">🏠 Back to Home</a>
+
+    <div class="header">
+        <h1>🎮 Fun Games with Friends! 🎮</h1>
+        <p>Meet your animated friends and play together!</p>
+    </div>
+
+    <div class="games-grid">
+        <!-- Sunny's Color Game -->
+        <div class="game-card sunny">
+            <div class="game-character" id="sunnyChar" onclick="playSunnyGame()">☀️</div>
+            <h3 class="game-title">Sunny's Color Game</h3>
+            <div id="sunnyBubble"></div>
+            <button class="game-button" onclick="startColorGame()">🌈 Play Colors!</button>
+        </div>
+
+        <!-- Luna's Shape Game -->
+        <div class="game-card luna">
+            <div class="game-character" id="lunaChar" onclick="playLunaGame()">🌙</div>
+            <h3 class="game-title">Luna's Shape Game</h3>
+            <div id="lunaBubble"></div>
+            <button class="game-button" onclick="startShapeGame()">⭐ Find Shapes!</button>
+        </div>
+
+        <!-- Buddy's Counting Game -->
+        <div class="game-card buddy">
+            <div class="game-character" id="buddyChar" onclick="playBuddyGame()">🐻</div>
+            <h3 class="game-title">Buddy's Counting Game</h3>
+            <div id="buddyBubble"></div>
+            <button class="game-button" onclick="startCountingGame()">🔢 Count Together!</button>
+        </div>
+
+        <!-- Splash's Memory Game -->
+        <div class="game-card splash">
+            <div class="game-character" id="splashChar" onclick="playSplashGame()">🐠</div>
+            <h3 class="game-title">Splash's Memory Game</h3>
+            <div id="splashBubble"></div>
+            <button class="game-button" onclick="startMemoryGame()">🧠 Remember!</button>
+        </div>
+    </div>
+
+    <!-- Game Play Area -->
+    <div class="game-play-area" id="gamePlayArea">
+        <h2 id="gameTitle" style="text-align: center; color: #ff6b35; margin-bottom: 20px;">Let's Play!</h2>
+        <div id="gameCharacter" style="font-size: 4em; text-align: center; margin: 20px 0;"></div>
+        <div id="gameInstructions" style="background: #f3e5f5; padding: 15px; border-radius: 15px; margin: 15px 0; text-align: center;"></div>
+        <div class="game-content" id="gameContent"></div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="game-button" onclick="closeGame()">🏠 Back to Friends</button>
+        </div>
+    </div>
+
+    <!-- Progress Area -->
+    <div class="progress-area">
+        <h3 style="color: #ff6b35;">🎉 Game Progress 🎉</h3>
+        <div class="score-grid">
+            <div class="score-item score-sunny">☀️ Colors: <span id="colorScore">0</span></div>
+            <div class="score-item score-luna">🌙 Shapes: <span id="shapeScore">0</span></div>
+            <div class="score-item score-buddy">🐻 Numbers: <span id="countScore">0</span></div>
+            <div class="score-item score-splash">🐠 Memory: <span id="memoryScore">0</span></div>
+        </div>
+    </div>
+
+    <script>
+        // Game scores
+        let gameScores = {
+            colors: 0,
+            shapes: 0,
+            counting: 0,
+            memory: 0
+        };
+
+        // Initialize
+        setTimeout(() => {
+            speakText("Hi Kaiden! I'm Sunny! Click on me to say hello!", 'female', 1.2);
+            showSpeechBubble('sunnyBubble', "Hi Kaiden! Click me! ☀️");
+        }, 1000);
+
+        // Character interactions
+        function playSunnyGame() {
+            const char = document.getElementById('sunnyChar');
+            char.classList.add('talking');
+            speakText("Hello! I'm Sunny the Sun! I love bright colors! Want to play my color game?", 'female', 1.2);
+            showSpeechBubble('sunnyBubble', "I love colors! Let's play! 🌈");
+            setTimeout(() => char.classList.remove('talking'), 2000);
+        }
+
+        function playLunaGame() {
+            const char = document.getElementById('lunaChar');
+            char.classList.add('talking');
+            speakText("Hi there! I'm Luna the Moon! I love shapes and stars! Let's find shapes together!", 'female', 0.9);
+            showSpeechBubble('lunaBubble', "Let's find pretty shapes! ⭐");
+            setTimeout(() => char.classList.remove('talking'), 2000);
+        }
+
+        function playBuddyGame() {
+            const char = document.getElementById('buddyChar');
+            char.classList.add('talking');
+            speakText("Hey buddy! I'm Buddy the Bear! I love counting things! Let's count together!", 'male', 0.8);
+            showSpeechBubble('buddyBubble', "Let's count together! 1, 2, 3! 🔢");
+            setTimeout(() => char.classList.remove('talking'), 2000);
+        }
+
+        function playSplashGame() {
+            const char = document.getElementById('splashChar');
+            char.classList.add('talking');
+            speakText("Splash! I'm Splash the Fish! I have a great memory! Let's play a memory game!", 'female', 1.1);
+            showSpeechBubble('splashBubble', "Remember with me! 🐠💭");
+            setTimeout(() => char.classList.remove('talking'), 2000);
+        }
+
+        // Speech bubble helper
+        function showSpeechBubble(bubbleId, message) {
+            const bubble = document.getElementById(bubbleId);
+            if (bubble) {
+                bubble.innerHTML = `<div class="speech-bubble">${message}</div>`;
+                setTimeout(() => { bubble.innerHTML = ''; }, 4000);
+            }
+        }
+
+        // Speech function
+        function speakText(text, voice = 'female', pitch = 1.0, rate = 0.8) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.pitch = pitch;
+                utterance.rate = rate;
+                utterance.volume = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Color Game
+        function startColorGame() {
+            const gameArea = document.getElementById('gamePlayArea');
+            gameArea.classList.add('active');
+            document.getElementById('gameTitle').textContent = "Sunny's Color Game";
+            document.getElementById('gameCharacter').textContent = "☀️";
+            document.getElementById('gameInstructions').textContent = "Help Sunny find the colors! Click on the color Sunny asks for!";
+            
+            const colors = [
+                { name: 'red', color: '#f44336', emoji: '❤️' },
+                { name: 'blue', color: '#2196f3', emoji: '💙' },
+                { name: 'green', color: '#4caf50', emoji: '💚' },
+                { name: 'yellow', color: '#ffd700', emoji: '💛' },
+                { name: 'purple', color: '#9c27b0', emoji: '💜' },
+                { name: 'orange', color: '#ff9800', emoji: '🧡' }
+            ];
+            
+            const targetColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            document.getElementById('gameContent').innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 1.5em; margin-bottom: 20px;">Find the <strong>${targetColor.name}</strong> color!</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 400px; margin: 0 auto;">
+                        ${colors.map(color => `
+                            <div onclick="checkColor('${color.name}', '${targetColor.name}')" style="width: 100px; height: 100px; background: ${color.color}; border-radius: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 2em; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">${color.emoji}</div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            speakText(`Find the ${targetColor.name} color for me!`, 'female', 1.2);
+            gameArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function checkColor(selected, target) {
+            if (selected === target) {
+                gameScores.colors++;
+                document.getElementById('colorScore').textContent = gameScores.colors;
+                speakText("Great job! You found the right color! You're amazing!", 'female', 1.2);
+                createGameCelebration();
+                setTimeout(() => {
+                    if (Math.random() > 0.5) {
+                        startColorGame();
+                    } else {
+                        closeGame();
+                        speakText("You did so well! Try another friend's game!", 'female', 1.2);
+                    }
+                }, 2000);
+            } else {
+                speakText("Almost! Try again! You can do it!", 'female', 1.2);
+                event.target.style.animation = 'shake 0.5s ease-in-out';
+            }
+        }
+
+        // Shape Game
+        function startShapeGame() {
+            const gameArea = document.getElementById('gamePlayArea');
+            gameArea.classList.add('active');
+            document.getElementById('gameTitle').textContent = "Luna's Shape Game";
+            document.getElementById('gameCharacter').textContent = "🌙";
+            document.getElementById('gameInstructions').textContent = "Help Luna find the shapes! Click on the shape Luna asks for!";
+            
+            const shapes = [
+                { name: 'circle', shape: '⭕', color: '#f44336' },
+                { name: 'star', shape: '⭐', color: '#ffd700' },
+                { name: 'heart', shape: '❤️', color: '#e91e63' },
+                { name: 'diamond', shape: '💎', color: '#2196f3' },
+                { name: 'square', shape: '⬜', color: '#4caf50' },
+                { name: 'triangle', shape: '🔺', color: '#ff9800' }
+            ];
+            
+            const targetShape = shapes[Math.floor(Math.random() * shapes.length)];
+            
+            document.getElementById('gameContent').innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 1.5em; margin-bottom: 20px;">Find the <strong>${targetShape.name}</strong> shape!</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 400px; margin: 0 auto;">
+                        ${shapes.map(shape => `
+                            <div onclick="checkShape('${shape.name}', '${targetShape.name}')" style="width: 100px; height: 100px; background: white; border: 3px solid ${shape.color}; border-radius: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 3em; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">${shape.shape}</div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            speakText(`Help me find the ${targetShape.name}!`, 'female', 0.9);
+            gameArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function checkShape(selected, target) {
+            if (selected === target) {
+                gameScores.shapes++;
+                document.getElementById('shapeScore').textContent = gameScores.shapes;
+                speakText("Perfect! You found the right shape! Luna is so proud of you!", 'female', 0.9);
+                createGameCelebration();
+                setTimeout(() => {
+                    if (Math.random() > 0.5) {
+                        startShapeGame();
+                    } else {
+                        closeGame();
+                        speakText("You're a shape expert! Try playing with another friend!", 'female', 0.9);
+                    }
+                }, 2000);
+            } else {
+                speakText("Not quite! Look for the right shape! You're doing great!", 'female', 0.9);
+                event.target.style.animation = 'shake 0.5s ease-in-out';
+            }
+        }
+
+        // Counting Game
+        function startCountingGame() {
+            const gameArea = document.getElementById('gamePlayArea');
+            gameArea.classList.add('active');
+            document.getElementById('gameTitle').textContent = "Buddy's Counting Game";
+            document.getElementById('gameCharacter').textContent = "🐻";
+            document.getElementById('gameInstructions').textContent = "Help Buddy count! How many items do you see?";
+            
+            const countOptions = [1, 2, 3, 4, 5];
+            const targetCount = countOptions[Math.floor(Math.random() * countOptions.length)];
+            const items = ['🍎', '🌟', '🎈', '🧸', '🎮', '📚', '🎨', '🎵'];
+            const selectedItem = items[Math.floor(Math.random() * items.length)];
+            
+            document.getElementById('gameContent').innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 1.5em; margin-bottom: 20px;">Count the ${selectedItem} items!</div>
+                    <div style="font-size: 4em; margin: 20px 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;">
+                        ${Array(targetCount).fill(selectedItem).join(' ')}
+                    </div>
+                    <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                        ${countOptions.map(num => `
+                            <button onclick="checkCount(${num}, ${targetCount})" style="width: 80px; height: 80px; font-size: 2em; font-weight: bold; border: 3px solid #4caf50; border-radius: 15px; background: white; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'; this.style.background='#e8f5e8'" onmouseout="this.style.transform='scale(1)'; this.style.background='white'">${num}</button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            speakText(`Help me count! How many ${selectedItem} do you see?`, 'male', 0.8);
+            gameArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function checkCount(selected, target) {
+            if (selected === target) {
+                gameScores.counting++;
+                document.getElementById('countScore').textContent = gameScores.counting;
+                speakText(`Yes! There are ${target}! You're a great counter, buddy!`, 'male', 0.8);
+                createGameCelebration();
+                setTimeout(() => {
+                    if (Math.random() > 0.5) {
+                        startCountingGame();
+                    } else {
+                        closeGame();
+                        speakText("You're amazing at counting! Go play with other friends!", 'male', 0.8);
+                    }
+                }, 2000);
+            } else {
+                speakText(`Not quite! Count again carefully. You can do it!`, 'male', 0.8);
+                event.target.style.animation = 'shake 0.5s ease-in-out';
+            }
+        }
+
+        // Memory Game
+        function startMemoryGame() {
+            const gameArea = document.getElementById('gamePlayArea');
+            gameArea.classList.add('active');
+            document.getElementById('gameTitle').textContent = "Splash's Memory Game";
+            document.getElementById('gameCharacter').textContent = "🐠";
+            document.getElementById('gameInstructions').textContent = "Watch the sequence, then click in the same order!";
+            
+            const memoryItems = ['🐠', '🐙', '🦀', '🌊', '⭐', '🐚'];
+            const sequence = [];
+            const sequenceLength = Math.min(3, gameScores.memory + 2);
+            
+            for (let i = 0; i < sequenceLength; i++) {
+                sequence.push(memoryItems[Math.floor(Math.random() * memoryItems.length)]);
+            }
+            
+            document.getElementById('gameContent').innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 1.5em; margin-bottom: 20px;">Watch carefully!</div>
+                    <div id="memoryDisplay" style="font-size: 4em; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 20px 0;"></div>
+                    <div id="memoryButtons" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 300px; margin: 0 auto; opacity: 0.5;">
+                        ${memoryItems.map(item => `
+                            <button onclick="memoryClick('${item}')" style="width: 80px; height: 80px; font-size: 2.5em; border: 3px solid #2196f3; border-radius: 15px; background: white; cursor: pointer; transition: all 0.3s ease;" disabled>${item}</button>
+                        `).join('')}
+                    </div>
+                    <div style="margin-top: 20px; font-size: 1.2em; color: #666;">
+                        <span id="memoryProgress">Get ready...</span>
+                    </div>
+                </div>
+            `;
+            
+            speakText("Watch the sequence carefully, then repeat it!", 'female', 1.1);
+            
+            window.memorySequence = sequence;
+            window.memoryPosition = 0;
+            showMemorySequence(sequence);
+            
+            gameArea.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showMemorySequence(sequence) {
+            const display = document.getElementById('memoryDisplay');
+            const progress = document.getElementById('memoryProgress');
+            let index = 0;
+            
+            progress.textContent = `Watch: ${sequence.length} items`;
+            
+            const showNext = () => {
+                if (index < sequence.length) {
+                    display.textContent = sequence[index];
+                    display.style.animation = 'bounce 0.5s ease';
+                    setTimeout(() => {
+                        display.style.animation = '';
+                        display.textContent = '💭';
+                        index++;
+                        setTimeout(showNext, 800);
+                    }, 600);
+                } else {
+                    display.textContent = '❓';
+                    progress.textContent = 'Now you try!';
+                    document.getElementById('memoryButtons').style.opacity = '1';
+                    document.querySelectorAll('#memoryButtons button').forEach(btn => {
+                        btn.disabled = false;
+                        btn.onmouseover = function() {
+                            this.style.transform = 'scale(1.1)';
+                            this.style.background = '#e3f2fd';
+                        };
+                        btn.onmouseout = function() {
+                            this.style.transform = 'scale(1)';
+                            this.style.background = 'white';
+                        };
+                    });
+                    speakText("Now click the sequence in the same order!", 'female', 1.1);
+                }
+            };
+            
+            setTimeout(showNext, 1000);
+        }
+
+        function memoryClick(item) {
+            const sequence = window.memorySequence;
+            const position = window.memoryPosition;
+            
+            if (item === sequence[position]) {
+                window.memoryPosition++;
+                document.getElementById('memoryProgress').textContent = `Correct! ${window.memoryPosition}/${sequence.length}`;
+                
+                if (window.memoryPosition >= sequence.length) {
+                    gameScores.memory++;
+                    document.getElementById('memoryScore').textContent = gameScores.memory;
+                    speakText("Perfect memory! Splash is so impressed!", 'female', 1.1);
+                    createGameCelebration();
+                    setTimeout(() => {
+                        if (Math.random() > 0.4) {
+                            startMemoryGame();
+                        } else {
+                            closeGame();
+                            speakText("Your memory is incredible! Try other games!", 'female', 1.1);
+                        }
+                    }, 2000);
+                }
+            } else {
+                speakText("Oops! Let's try that sequence again!", 'female', 1.1);
+                event.target.style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(() => {
+                    window.memoryPosition = 0;
+                    document.getElementById('memoryButtons').style.opacity = '0.5';
+                    document.querySelectorAll('#memoryButtons button').forEach(btn => btn.disabled = true);
+                    showMemorySequence(sequence);
+                }, 1000);
+            }
+        }
+
+        function closeGame() {
+            document.getElementById('gamePlayArea').classList.remove('active');
+            
+            const encouragements = [
+                { text: "Thanks for playing with me! You're awesome!", voice: 'female', pitch: 1.2 },
+                { text: "You did great, buddy! Come back anytime!", voice: 'male', pitch: 0.8 },
+                { text: "That was so much fun! You're really smart!", voice: 'female', pitch: 0.9 },
+                { text: "Splash splash! You have an amazing brain!", voice: 'female', pitch: 1.1 }
+            ];
+            
+            const encouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+            speakText(encouragement.text, encouragement.voice, encouragement.pitch);
+        }
+
+        function createGameCelebration() {
+            const celebrations = ['🎉', '⭐', '🌟', '💫', '🎈', '🎊', '🏆', '👏'];
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const celebration = document.createElement('div');
+                    celebration.style.cssText = `
+                        position: fixed; pointer-events: none; font-size: 3em; z-index: 1000;
+                        animation: celebrationFloat 2s ease-out forwards;
+                    `;
+                    celebration.textContent = celebrations[Math.floor(Math.random() * celebrations.length)];
+                    celebration.style.left = Math.random() * window.innerWidth + 'px';
+                    celebration.style.top = window.innerHeight + 'px';
+                    document.body.appendChild(celebration);
+                    
+                    setTimeout(() => {
+                        if (celebration.parentNode) {
+                            celebration.parentNode.removeChild(celebration);
+                        }
+                    }, 2000);
+                }, i * 200);
+            }
+        }
+    </script>
+</body>
+</html>
