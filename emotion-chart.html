@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>😊 My Feelings - Kaiden's World</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #e91e63;
+            border: 2px solid #e91e63;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-button:hover {
+            background: white;
+            transform: scale(1.05);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: 60px;
+            color: #e91e63;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .feelings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+
+        .feeling-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 4px solid transparent;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feeling-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .feeling-card.selected {
+            transform: scale(1.1);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1.1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .feeling-icon {
+            font-size: 5em;
+            margin-bottom: 15px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .feeling-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .feeling-description {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .intensity-scale {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .intensity-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .intensity-dot.active {
+            transform: scale(1.3);
+        }
+
+        /* Emotion-specific colors */
+        .feeling-card[data-emotion="happy"] { border-color: #ffd700; }
+        .feeling-card[data-emotion="happy"]:hover { background: #fffef0; }
+        .feeling-card[data-emotion="happy"] .intensity-dot.active { background: #ffd700; }
+
+        .feeling-card[data-emotion="sad"] { border-color: #64b5f6; }
+        .feeling-card[data-emotion="sad"]:hover { background: #e3f2fd; }
+        .feeling-card[data-emotion="sad"] .intensity-dot.active { background: #64b5f6; }
+
+        .feeling-card[data-emotion="angry"] { border-color: #ef5350; }
+        .feeling-card[data-emotion="angry"]:hover { background: #ffebee; }
+        .feeling-card[data-emotion="angry"] .intensity-dot.active { background: #ef5350; }
+
+        .feeling-card[data-emotion="scared"] { border-color: #9c27b0; }
+        .feeling-card[data-emotion="scared"]:hover { background: #f3e5f5; }
+        .feeling-card[data-emotion="scared"] .intensity-dot.active { background: #9c27b0; }
+
+        .feeling-card[data-emotion="excited"] { border-color: #ff9800; }
+        .feeling-card[data-emotion="excited"]:hover { background: #fff3e0; }
+        .feeling-card[data-emotion="excited"] .intensity-dot.active { background: #ff9800; }
+
+        .feeling-card[data-emotion="calm"] { border-color: #4caf50; }
+        .feeling-card[data-emotion="calm"]:hover { background: #e8f5e9; }
+        .feeling-card[data-emotion="calm"] .intensity-dot.active { background: #4caf50; }
+
+        .feeling-card[data-emotion="worried"] { border-color: #9e9e9e; }
+        .feeling-card[data-emotion="worried"]:hover { background: #f5f5f5; }
+        .feeling-card[data-emotion="worried"] .intensity-dot.active { background: #9e9e9e; }
+
+        .feeling-card[data-emotion="frustrated"] { border-color: #ff6b6b; }
+        .feeling-card[data-emotion="frustrated"]:hover { background: #fff0f0; }
+        .feeling-card[data-emotion="frustrated"] .intensity-dot.active { background: #ff6b6b; }
+
+        .feeling-card[data-emotion="proud"] { border-color: #ffd700; }
+        .feeling-card[data-emotion="proud"]:hover { background: #fffef0; }
+        .feeling-card[data-emotion="proud"] .intensity-dot.active { background: #ffd700; }
+
+        .feeling-card[data-emotion="silly"] { border-color: #ff4081; }
+        .feeling-card[data-emotion="silly"]:hover { background: #fce4ec; }
+        .feeling-card[data-emotion="silly"] .intensity-dot.active { background: #ff4081; }
+
+        .feeling-card[data-emotion="confused"] { border-color: #795548; }
+        .feeling-card[data-emotion="confused"]:hover { background: #efebe9; }
+        .feeling-card[data-emotion="confused"] .intensity-dot.active { background: #795548; }
+
+        .feeling-card[data-emotion="tired"] { border-color: #607d8b; }
+        .feeling-card[data-emotion="tired"]:hover { background: #eceff1; }
+        .feeling-card[data-emotion="tired"] .intensity-dot.active { background: #607d8b; }
+
+        .feedback-area {
+            text-align: center;
+            min-height: 100px;
+            margin: 30px auto;
+            max-width: 800px;
+        }
+
+        .feedback-message {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e91e63;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .feelings-log {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 800px;
+            margin: 40px auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .log-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e91e63;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .log-entry {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .log-entry:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .log-icon {
+            font-size: 2em;
+        }
+
+        .log-details {
+            flex: 1;
+        }
+
+        .log-time {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .clear-log-btn {
+            background: #e91e63;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .clear-log-btn:hover {
+            background: #c2185b;
+            transform: scale(1.05);
+        }
+
+        @keyframes celebration {
+            0% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-300px) rotate(360deg); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .feelings-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .feeling-icon {
+                font-size: 3.5em;
+            }
+
+            .feeling-name {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">🏠 Back to Home</a>
+
+    <div class="header">
+        <h1>😊 How Are You Feeling? 😊</h1>
+        <p class="subtitle">Tap a feeling to tell us how you feel</p>
+    </div>
+
+    <div class="feelings-grid" id="feelingsGrid">
+        <!-- Feelings will be populated by JavaScript -->
+    </div>
+
+    <div class="feedback-area" id="feedbackArea">
+        <p style="color: #666; font-size: 1.1em;">👆 Choose a feeling to share how you feel</p>
+    </div>
+
+    <div class="feelings-log" id="feelingsLog">
+        <div class="log-title">📝 Today's Feelings</div>
+        <div id="logEntries"></div>
+        <button class="clear-log-btn" onclick="clearLog()" style="display: none;" id="clearLogBtn">Clear Today's Log</button>
+    </div>
+
+    <script>
+        // Feelings data
+        const feelings = [
+            { id: 'happy', icon: '😊', name: 'Happy', description: 'I feel good!', phrases: ['I feel happy!', 'I am feeling good!', 'I feel joyful!'] },
+            { id: 'sad', icon: '😢', name: 'Sad', description: 'I feel down', phrases: ['I feel sad', 'I am feeling down', 'I feel blue'] },
+            { id: 'angry', icon: '😠', name: 'Angry', description: 'I feel mad', phrases: ['I feel angry', 'I am mad', 'I feel frustrated'] },
+            { id: 'scared', icon: '😰', name: 'Scared', description: 'I feel afraid', phrases: ['I feel scared', 'I am afraid', 'I feel worried'] },
+            { id: 'excited', icon: '🤩', name: 'Excited', description: 'I feel pumped!', phrases: ['I feel excited!', 'I am so happy!', 'I feel energized!'] },
+            { id: 'calm', icon: '😌', name: 'Calm', description: 'I feel peaceful', phrases: ['I feel calm', 'I am relaxed', 'I feel peaceful'] },
+            { id: 'worried', icon: '😟', name: 'Worried', description: 'I feel nervous', phrases: ['I feel worried', 'I am nervous', 'I feel anxious'] },
+            { id: 'frustrated', icon: '😤', name: 'Frustrated', description: 'I feel stuck', phrases: ['I feel frustrated', 'I am stuck', 'This is hard'] },
+            { id: 'proud', icon: '😌', name: 'Proud', description: 'I did good!', phrases: ['I feel proud!', 'I did it!', 'I feel accomplished!'] },
+            { id: 'silly', icon: '🤪', name: 'Silly', description: 'I feel playful', phrases: ['I feel silly!', 'I am playful!', 'I feel goofy!'] },
+            { id: 'confused', icon: '😕', name: 'Confused', description: 'I don\'t understand', phrases: ['I feel confused', 'I don\'t understand', 'I am puzzled'] },
+            { id: 'tired', icon: '😴', name: 'Tired', description: 'I need rest', phrases: ['I feel tired', 'I am sleepy', 'I need rest'] }
+        ];
+
+        let feelingsLog = [];
+        let currentFeeling = null;
+        let currentIntensity = 3;
+
+        // Initialize
+        function init() {
+            renderFeelings();
+            loadLog();
+            updateLogDisplay();
+        }
+
+        // Render feelings grid
+        function renderFeelings() {
+            const grid = document.getElementById('feelingsGrid');
+            grid.innerHTML = feelings.map(feeling => `
+                <div class="feeling-card" data-emotion="${feeling.id}" onclick="selectFeeling('${feeling.id}')">
+                    <div class="feeling-icon">${feeling.icon}</div>
+                    <div class="feeling-name">${feeling.name}</div>
+                    <div class="feeling-description">${feeling.description}</div>
+                    <div class="intensity-scale" id="scale-${feeling.id}">
+                        ${[1,2,3,4,5].map(level => `
+                            <div class="intensity-dot ${level === 3 ? 'active' : ''}" 
+                                 onclick="event.stopPropagation(); setIntensity('${feeling.id}', ${level})">
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Set intensity
+        function setIntensity(feelingId, level) {
+            currentIntensity = level;
+            const scale = document.getElementById(`scale-${feelingId}`);
+            const dots = scale.querySelectorAll('.intensity-dot');
+            dots.forEach((dot, index) => {
+                if (index < level) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // Select feeling
+        function selectFeeling(feelingId) {
+            const feeling = feelings.find(f => f.id === feelingId);
+            if (!feeling) return;
+
+            currentFeeling = feeling;
+
+            // Clear previous selections
+            document.querySelectorAll('.feeling-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Mark current selection
+            const card = document.querySelector(`[data-emotion="${feelingId}"]`);
+            card.classList.add('selected');
+
+            // Get intensity
+            const scale = document.getElementById(`scale-${feelingId}`);
+            const activeDots = scale.querySelectorAll('.intensity-dot.active').length;
+            currentIntensity = activeDots;
+
+            // Show feedback
+            const phrase = feeling.phrases[Math.floor(Math.random() * feeling.phrases.length)];
+            const intensityText = ['a tiny bit', 'a little', 'somewhat', 'quite', 'very'][currentIntensity - 1];
+            
+            const feedbackArea = document.getElementById('feedbackArea');
+            feedbackArea.innerHTML = `
+                <div class="feedback-message">
+                    ${feeling.icon} You feel ${intensityText} ${feeling.name.toLowerCase()}! ${feeling.icon}<br>
+                    <span style="font-size: 0.8em; color: #666; margin-top: 10px; display: block;">${phrase}</span>
+                </div>
+            `;
+
+            // Speak
+            speak(`You feel ${intensityText} ${feeling.name}. ${phrase}`);
+
+            // Log entry
+            logFeeling(feeling, currentIntensity);
+
+            // Celebration
+            createCelebration();
+
+            // Auto-deselect after 3 seconds
+            setTimeout(() => {
+                card.classList.remove('selected');
+            }, 3000);
+        }
+
+        // Log feeling
+        function logFeeling(feeling, intensity) {
+            const entry = {
+                feeling: feeling,
+                intensity: intensity,
+                timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+            };
+            
+            feelingsLog.push(entry);
+            saveLog();
+            updateLogDisplay();
+        }
+
+        // Update log display
+        function updateLogDisplay() {
+            const logEntries = document.getElementById('logEntries');
+            const clearBtn = document.getElementById('clearLogBtn');
+
+            if (feelingsLog.length === 0) {
+                logEntries.innerHTML = '<p style="text-align: center; color: #999;">No feelings logged yet today</p>';
+                clearBtn.style.display = 'none';
+            } else {
+                logEntries.innerHTML = feelingsLog.map((entry, index) => `
+                    <div class="log-entry">
+                        <div class="log-icon">${entry.feeling.icon}</div>
+                        <div class="log-details">
+                            <div><strong>${entry.feeling.name}</strong> - Intensity: ${'⭐'.repeat(entry.intensity)}</div>
+                            <div class="log-time">${entry.timestamp}</div>
+                        </div>
+                    </div>
+                `).reverse().join('');
+                clearBtn.style.display = 'block';
+            }
+        }
+
+        // Save log to localStorage
+        function saveLog() {
+            localStorage.setItem('kaidensworld_feelings_log', JSON.stringify(feelingsLog));
+        }
+
+        // Load log from localStorage
+        function loadLog() {
+            const saved = localStorage.getItem('kaidensworld_feelings_log');
+            if (saved) {
+                feelingsLog = JSON.parse(saved);
+            }
+        }
+
+        // Clear log
+        function clearLog() {
+            if (confirm('Clear all feelings from today?')) {
+                feelingsLog = [];
+                saveLog();
+                updateLogDisplay();
+                speak('Feelings log cleared');
+            }
+        }
+
+        // Speech function
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.85;
+                utterance.pitch = 1.1;
+                utterance.volume = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Celebration effect
+        function createCelebration() {
+            const emojis = ['💖', '✨', '🌟', '💫', '🎉', '⭐'];
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.style.cssText = `
+                        position: fixed;
+                        pointer-events: none;
+                        font-size: 2.5em;
+                        z-index: 1000;
+                        animation: celebration 2s ease-out forwards;
+                    `;
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.left = Math.random() * window.innerWidth + 'px';
+                    emoji.style.top = window.innerHeight + 'px';
+                    document.body.appendChild(emoji);
+                    
+                    setTimeout(() => {
+                        if (emoji.parentNode) {
+                            emoji.parentNode.removeChild(emoji);
+                        }
+                    }, 2000);
+                }, i * 150);
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
