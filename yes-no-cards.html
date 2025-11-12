@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ Yes or No - Kaiden's World</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 20px; }
+        .back-button { position: fixed; top: 20px; left: 20px; background: white; color: #5e72e4; border: 2px solid #5e72e4; padding: 12px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; }
+        .back-button:hover { transform: scale(1.05); }
+        .header { text-align: center; margin: 60px 0 40px; color: #5e72e4; }
+        .header h1 { font-size: 3em; font-weight: bold; margin-bottom: 10px; }
+        .subtitle { font-size: 1.3em; color: #666; margin-bottom: 20px; }
+        .question-area { max-width: 1200px; margin: 0 auto 40px; background: white; border-radius: 25px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        .question-display { font-size: 2em; font-weight: bold; color: #333; margin-bottom: 20px; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+        .question-examples { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .example-btn { background: #f0f0f0; border: 2px solid #ddd; padding: 10px 20px; border-radius: 15px; cursor: pointer; transition: all 0.3s ease; font-size: 1em; }
+        .example-btn:hover { background: #e8eaf6; border-color: #5e72e4; transform: scale(1.05); }
+        .choice-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .choice-card { background: white; border-radius: 30px; padding: 60px 40px; text-align: center; cursor: pointer; transition: all 0.4s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 5px solid transparent; position: relative; overflow: hidden; }
+        .choice-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent); transform: rotate(45deg); transition: all 0.5s ease; opacity: 0; }
+        .choice-card:hover::before { animation: shimmer 1.5s ease-in-out; }
+        @keyframes shimmer { 0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; } }
+        .choice-card:hover { transform: translateY(-15px) scale(1.05); box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
+        .choice-card:active { transform: translateY(-10px) scale(1.02); }
+        .choice-card.yes { border-color: #4caf50; }
+        .choice-card.yes:hover { border-color: #4caf50; background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 20%, white 20%); }
+        .choice-card.no { border-color: #f44336; }
+        .choice-card.no:hover { border-color: #f44336; background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 20%, white 20%); }
+        .choice-icon { font-size: 8em; margin-bottom: 20px; display: block; transition: all 0.3s ease; animation: breathe 3s ease-in-out infinite; }
+        @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .choice-card:hover .choice-icon { animation: excited 0.6s ease-in-out infinite; }
+        @keyframes excited { 0%, 100% { transform: scale(1) rotate(0deg); } 25% { transform: scale(1.2) rotate(-10deg); } 75% { transform: scale(1.2) rotate(10deg); } }
+        .choice-text { font-size: 3em; font-weight: bold; color: #333; margin-bottom: 15px; }
+        .choice-card.yes .choice-text { color: #4caf50; }
+        .choice-card.no .choice-text { color: #f44336; }
+        .choice-description { font-size: 1.2em; color: #666; }
+        .settings-panel { max-width: 800px; margin: 40px auto; background: white; border-radius: 20px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .settings-title { font-size: 1.5em; font-weight: bold; color: #5e72e4; margin-bottom: 20px; text-align: center; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 15px; }
+        .setting-label { font-size: 1.1em; font-weight: bold; color: #333; }
+        .setting-control { display: flex; gap: 10px; }
+        .size-btn, .mode-btn { padding: 8px 16px; border: 2px solid #5e72e4; background: white; color: #5e72e4; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; }
+        .size-btn:hover, .mode-btn:hover { background: #5e72e4; color: white; transform: scale(1.05); }
+        .size-btn.active, .mode-btn.active { background: #5e72e4; color: white; }
+        .celebration-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1999; }
+        .celebration-overlay.show { display: block; }
+        .celebration-box { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 60px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); z-index: 2000; text-align: center; animation: bounceIn 0.6s ease-out; }
+        .celebration-box.show { display: block; }
+        @keyframes bounceIn { 0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; } 50% { transform: translate(-50%, -50%) scale(1.1); } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+        .celebration-icon { font-size: 6em; margin-bottom: 20px; }
+        .celebration-text { font-size: 2.5em; font-weight: bold; margin-bottom: 15px; }
+        .celebration-subtext { font-size: 1.3em; color: #666; margin-bottom: 30px; }
+        .btn-continue { background: #5e72e4; color: white; border: none; padding: 15px 40px; border-radius: 20px; font-size: 1.2em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .btn-continue:hover { background: #4c63d2; transform: scale(1.05); }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .choice-container { grid-template-columns: 1fr; gap: 20px; }
+            .choice-card { padding: 40px 20px; }
+            .choice-icon { font-size: 6em; }
+            .choice-text { font-size: 2.5em; }
+            .question-display { font-size: 1.5em; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">🏠 Back</a>
+    
+    <div class="header">
+        <h1>✅ Yes or No? ✅</h1>
+        <p class="subtitle">Make your choice - it's easy!</p>
+    </div>
+
+    <div class="question-area">
+        <div class="question-display" id="questionDisplay">Choose YES or NO</div>
+        <div class="question-examples">
+            <button class="example-btn" onclick="setQuestion('Do you want a snack?')">🍪 Snack?</button>
+            <button class="example-btn" onclick="setQuestion('Are you hungry?')">🍽️ Hungry?</button>
+            <button class="example-btn" onclick="setQuestion('Do you want to play?')">🎮 Play?</button>
+            <button class="example-btn" onclick="setQuestion('Are you tired?')">😴 Tired?</button>
+            <button class="example-btn" onclick="setQuestion('Do you need help?')">🤝 Help?</button>
+            <button class="example-btn" onclick="setQuestion('Are you ready?')">⭐ Ready?</button>
+        </div>
+    </div>
+
+    <div class="choice-container" id="choiceContainer">
+        <div class="choice-card yes" onclick="makeChoice('yes')">
+            <span class="choice-icon">✅</span>
+            <div class="choice-text">YES</div>
+            <div class="choice-description">I agree • I want to • Okay</div>
+        </div>
+
+        <div class="choice-card no" onclick="makeChoice('no')">
+            <span class="choice-icon">❌</span>
+            <div class="choice-text">NO</div>
+            <div class="choice-description">I don't want to • Not now • Maybe later</div>
+        </div>
+    </div>
+
+    <div class="settings-panel">
+        <div class="settings-title">⚙️ Settings</div>
+        <div class="setting-row">
+            <div class="setting-label">Card Size:</div>
+            <div class="setting-control">
+                <button class="size-btn" onclick="setSize('normal')">Normal</button>
+                <button class="size-btn active" onclick="setSize('large')">Large</button>
+                <button class="size-btn" onclick="setSize('extra-large')">Extra Large</button>
+            </div>
+        </div>
+        <div class="setting-row">
+            <div class="setting-label">Response Mode:</div>
+            <div class="setting-control">
+                <button class="mode-btn active" onclick="setMode('celebration')">Celebration</button>
+                <button class="mode-btn" onclick="setMode('quick')">Quick & Quiet</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="celebration-overlay" id="overlay"></div>
+    <div class="celebration-box" id="celebration">
+        <div class="celebration-icon" id="celebrationIcon">🎉</div>
+        <div class="celebration-text" id="celebrationText">Great choice!</div>
+        <div class="celebration-subtext" id="celebrationSubtext">You picked YES!</div>
+        <button class="btn-continue" onclick="closeCelebration()">Make Another Choice</button>
+    </div>
+
+    <script>
+        let currentMode = 'celebration';
+        let currentSize = 'large';
+
+        function setQuestion(question) {
+            document.getElementById('questionDisplay').textContent = question;
+            speak(question);
+        }
+
+        function makeChoice(choice) {
+            const isYes = choice === 'yes';
+            const choiceText = isYes ? 'YES' : 'NO';
+            
+            // Speak the choice
+            speak(`You chose ${choiceText}`);
+            
+            if (currentMode === 'celebration') {
+                showCelebration(choice);
+            } else {
+                // Quick mode - just visual feedback
+                const card = event.target.closest('.choice-card');
+                card.style.animation = 'none';
+                setTimeout(() => {
+                    card.style.animation = 'excited 0.3s ease-in-out 3';
+                }, 10);
+                playSound(choice);
+            }
+        }
+
+        function showCelebration(choice) {
+            const isYes = choice === 'yes';
+            const icon = document.getElementById('celebrationIcon');
+            const text = document.getElementById('celebrationText');
+            const subtext = document.getElementById('celebrationSubtext');
+            
+            if (isYes) {
+                icon.textContent = '✅';
+                text.textContent = 'You said YES!';
+                text.style.color = '#4caf50';
+                subtext.textContent = 'Great choice!';
+            } else {
+                icon.textContent = '❌';
+                text.textContent = 'You said NO!';
+                text.style.color = '#f44336';
+                subtext.textContent = 'That\'s okay!';
+            }
+            
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('celebration').classList.add('show');
+            playSound(choice);
+            createConfetti(isYes);
+        }
+
+        function closeCelebration() {
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('celebration').classList.remove('show');
+        }
+
+        function setSize(size) {
+            currentSize = size;
+            const container = document.getElementById('choiceContainer');
+            const cards = document.querySelectorAll('.choice-card');
+            
+            // Remove active class from all size buttons
+            document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Apply size
+            cards.forEach(card => {
+                if (size === 'normal') {
+                    card.style.padding = '40px 30px';
+                    card.querySelector('.choice-icon').style.fontSize = '6em';
+                    card.querySelector('.choice-text').style.fontSize = '2.5em';
+                } else if (size === 'large') {
+                    card.style.padding = '60px 40px';
+                    card.querySelector('.choice-icon').style.fontSize = '8em';
+                    card.querySelector('.choice-text').style.fontSize = '3em';
+                } else if (size === 'extra-large') {
+                    card.style.padding = '80px 50px';
+                    card.querySelector('.choice-icon').style.fontSize = '10em';
+                    card.querySelector('.choice-text').style.fontSize = '3.5em';
+                }
+            });
+            
+            speak(`Size set to ${size.replace('-', ' ')}`);
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Remove active class from all mode buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            speak(mode === 'celebration' ? 'Celebration mode on' : 'Quick mode on');
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9;
+                utterance.pitch = 1.1;
+                utterance.volume = 0.9;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function playSound(choice) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const isYes = choice === 'yes';
+            const frequencies = isYes ? [523.25, 659.25, 783.99] : [392.00, 329.63, 261.63];
+            
+            frequencies.forEach((freq, i) => {
+                setTimeout(() => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+                    gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.5);
+                }, i * 150);
+            });
+        }
+
+        function createConfetti(isYes) {
+            const emojis = isYes ? ['✅', '✨', '🌟', '⭐', '💚', '👍', '😊'] : ['❌', '💭', '🤔', '👌', '💙'];
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.style.cssText = `
+                        position: fixed; pointer-events: none; font-size: 3em; z-index: 2001;
+                        animation: confettiFall 2s ease-out forwards;
+                    `;
+                    confetti.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.top = '-50px';
+                    document.body.appendChild(confetti);
+                    
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes confettiFall {
+                            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                            100% { transform: translateY(${window.innerHeight + 100}px) rotate(360deg); opacity: 0; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                    setTimeout(() => {
+                        if (confetti.parentNode) confetti.parentNode.removeChild(confetti);
+                        if (style.parentNode) style.parentNode.removeChild(style);
+                    }, 2000);
+                }, i * 100);
+            }
+        }
+
+        // Welcome message
+        window.addEventListener('DOMContentLoaded', () => {
+            speak('Choose yes or no. It\'s easy!');
+        });
+    </script>
+</body>
+</html>
