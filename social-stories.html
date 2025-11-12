@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📖 Social Stories - Kaiden's World</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); min-height: 100vh; padding: 20px; }
+        .back-button { position: fixed; top: 20px; left: 20px; background: white; color: #ff6f00; border: 2px solid #ff6f00; padding: 12px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; }
+        .back-button:hover { transform: scale(1.05); }
+        .header { text-align: center; margin: 60px 0 30px; color: #ff6f00; }
+        .header h1 { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2em; color: #666; }
+        .stories-container { max-width: 1000px; margin: 0 auto; }
+        .story-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .story-card { background: white; border-radius: 20px; padding: 25px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 3px solid transparent; }
+        .story-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-color: #ff6f00; }
+        .story-icon { font-size: 3em; margin-bottom: 15px; }
+        .story-title { font-size: 1.3em; font-weight: bold; color: #ff6f00; margin-bottom: 8px; }
+        .story-description { font-size: 0.9em; color: #666; }
+        .story-viewer { background: white; border-radius: 25px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; }
+        .story-viewer.active { display: block; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+        .story-header { text-align: center; margin-bottom: 30px; }
+        .story-header h2 { font-size: 2em; color: #ff6f00; margin-bottom: 10px; }
+        .story-pages { position: relative; min-height: 400px; }
+        .story-page { display: none; padding: 30px; background: #fff8e1; border-radius: 20px; border: 3px solid #ff6f00; animation: slideIn 0.5s ease-out; }
+        .story-page.active { display: block; }
+        @keyframes slideIn { 0% { opacity: 0; transform: translateX(50px); } 100% { opacity: 1; transform: translateX(0); } }
+        .page-icon { font-size: 5em; text-align: center; margin-bottom: 20px; }
+        .page-text { font-size: 1.5em; line-height: 1.8; color: #333; text-align: center; margin-bottom: 20px; }
+        .page-number { text-align: center; color: #999; font-size: 0.9em; margin-top: 20px; }
+        .story-controls { display: flex; justify-content: center; gap: 15px; margin-top: 30px; }
+        .btn { padding: 15px 30px; border: none; border-radius: 20px; font-size: 1.2em; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .btn-prev { background: #9e9e9e; color: white; }
+        .btn-prev:hover { background: #757575; transform: scale(1.05); }
+        .btn-next { background: #4caf50; color: white; }
+        .btn-next:hover { background: #45a049; transform: scale(1.05); }
+        .btn-read { background: #2196f3; color: white; }
+        .btn-read:hover { background: #1976d2; transform: scale(1.05); }
+        .btn-close { background: #ff6f00; color: white; }
+        .btn-close:hover { background: #f57c00; transform: scale(1.05); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .completion-message { background: #4caf50; color: white; padding: 20px; border-radius: 20px; text-align: center; font-size: 1.3em; font-weight: bold; margin-top: 20px; display: none; animation: bounceIn 0.6s ease-out; }
+        .completion-message.show { display: block; }
+        @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .story-selector { grid-template-columns: 1fr; }
+            .page-icon { font-size: 3.5em; }
+            .page-text { font-size: 1.2em; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">🏠 Back</a>
+    <div class="header">
+        <h1>📖 Social Stories 📖</h1>
+        <p class="subtitle">Stories to help you understand what will happen</p>
+    </div>
+    <div class="stories-container">
+        <div class="story-selector" id="storySelector"></div>
+        <div class="story-viewer" id="storyViewer">
+            <div class="story-header">
+                <h2 id="storyTitle"></h2>
+            </div>
+            <div class="story-pages" id="storyPages"></div>
+            <div class="story-controls">
+                <button class="btn btn-prev" id="prevBtn" onclick="prevPage()">⬅️ Back</button>
+                <button class="btn btn-read" onclick="readCurrentPage()">🔊 Read to Me</button>
+                <button class="btn btn-next" id="nextBtn" onclick="nextPage()">Next ➡️</button>
+            </div>
+            <div class="completion-message" id="completionMsg">🎉 Great job! You finished the story! 🎉</div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-close" onclick="closeStory()">📚 Choose Another Story</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const stories = [
+            {
+                id: 'doctor', icon: '👨‍⚕️', title: 'Going to the Doctor', description: 'What happens at the doctor',
+                pages: [
+                    { icon: '🏥', text: 'Today I am going to the doctor. The doctor helps keep me healthy.' },
+                    { icon: '🚗', text: 'I will ride in the car to the doctor\'s office. It might take a few minutes to get there.' },
+                    { icon: '🪑', text: 'At the doctor\'s office, I will sit in the waiting room. There might be other people waiting too.' },
+                    { icon: '👨‍⚕️', text: 'The doctor will call my name. Then I will go into the exam room with my family.' },
+                    { icon: '🩺', text: 'The doctor might check my heart with a stethoscope. It feels cold but doesn\'t hurt.' },
+                    { icon: '😊', text: 'The doctor will ask how I feel. I can show them or tell them if something hurts.' },
+                    { icon: '⭐', text: 'When the visit is done, I can go home. I did a great job at the doctor!' }
+                ]
+            },
+            {
+                id: 'birthday', icon: '🎂', title: 'Birthday Party', description: 'Going to a birthday party',
+                pages: [
+                    { icon: '🎉', text: 'I am going to a birthday party! A birthday party is a celebration for someone special.' },
+                    { icon: '🎁', text: 'I might bring a gift for the birthday person. It\'s wrapped in pretty paper.' },
+                    { icon: '👥', text: 'At the party, there will be other people. Some I know, and some might be new friends.' },
+                    { icon: '🎈', text: 'There might be decorations like balloons and banners. They make the party look fun!' },
+                    { icon: '🎵', text: 'We might play games and listen to music. If it gets too loud, I can take a break.' },
+                    { icon: '🍰', text: 'We will sing "Happy Birthday" and eat cake. I can eat as much or as little as I want.' },
+                    { icon: '😊', text: 'When the party is over, I will say goodbye. I had fun at the birthday party!' }
+                ]
+            },
+            {
+                id: 'school', icon: '🏫', title: 'Going to School', description: 'What happens at school',
+                pages: [
+                    { icon: '🌅', text: 'In the morning, I get ready for school. I eat breakfast and get dressed.' },
+                    { icon: '🚌', text: 'I go to school by bus or car. The ride helps me get to school safely.' },
+                    { icon: '👋', text: 'When I arrive, I say hello to my teacher and friends. Everyone is happy to see me!' },
+                    { icon: '📚', text: 'At school, I learn new things. My teacher helps me with reading, math, and other subjects.' },
+                    { icon: '🍎', text: 'At lunchtime, I eat my food. I can sit with my friends and talk.' },
+                    { icon: '🎨', text: 'Sometimes we do fun activities like art, music, or gym. These are special times!' },
+                    { icon: '🏠', text: 'When school is over, I go home. I can tell my family about my day!' }
+                ]
+            },
+            {
+                id: 'dentist', icon: '🦷', title: 'Going to the Dentist', description: 'Visiting the dentist',
+                pages: [
+                    { icon: '🦷', text: 'Today I am going to the dentist. The dentist helps keep my teeth healthy and strong.' },
+                    { icon: '🚗', text: 'I will ride in the car to the dentist\'s office. My family will come with me.' },
+                    { icon: '🪑', text: 'At the dentist, I will sit in a special chair. The chair can move up and down!' },
+                    { icon: '🔦', text: 'The dentist will use a small light to look at my teeth. The light is bright but doesn\'t hurt.' },
+                    { icon: '🪥', text: 'They might clean my teeth with special tools. I will feel the brush on my teeth.' },
+                    { icon: '💧', text: 'I can rinse my mouth with water. There\'s a special sink right next to the chair.' },
+                    { icon: '⭐', text: 'When we\'re done, I might get a sticker or prize. I did such a good job!' }
+                ]
+            },
+            {
+                id: 'haircut', icon: '💇', title: 'Getting a Haircut', description: 'Going to get a haircut',
+                pages: [
+                    { icon: '✂️', text: 'Today I am getting a haircut. A haircut makes my hair shorter and neater.' },
+                    { icon: '🏠', text: 'I will go to the hair salon or barber shop. It\'s a place where people cut hair.' },
+                    { icon: '🪑', text: 'I will sit in a special chair. Sometimes they put a cape around me to keep hair off my clothes.' },
+                    { icon: '💇', text: 'The hairstylist will use scissors or clippers. I might feel the scissors snipping or hear buzzing.' },
+                    { icon: '💦', text: 'They might spray water on my hair. The water helps make cutting easier.' },
+                    { icon: '🪮', text: 'They will brush or comb my hair. It might tickle a little bit!' },
+                    { icon: '😊', text: 'When it\'s done, my hair looks great! I can look in the mirror and see my new haircut.' }
+                ]
+            },
+            {
+                id: 'store', icon: '🛒', title: 'Going to the Store', description: 'Shopping at the store',
+                pages: [
+                    { icon: '🏪', text: 'Today I am going to the store. The store is where we buy things we need.' },
+                    { icon: '🛒', text: 'We might get a shopping cart or basket. This helps carry the things we want to buy.' },
+                    { icon: '🚶', text: 'We will walk through different aisles. Each aisle has different kinds of items.' },
+                    { icon: '🍎', text: 'We might look for food, toys, or other things. I can help look for items on our list!' },
+                    { icon: '👥', text: 'There might be other people shopping too. Everyone is getting what they need.' },
+                    { icon: '💳', text: 'When we\'re done, we go to the checkout. We pay for our items there.' },
+                    { icon: '🏠', text: 'Then we go home with our purchases. I helped with shopping today!' }
+                ]
+            }
+        ];
+        let currentStory = null;
+        let currentPage = 0;
+        function init() {
+            const selector = document.getElementById('storySelector');
+            selector.innerHTML = stories.map(story => `
+                <div class="story-card" onclick="openStory('${story.id}')">
+                    <div class="story-icon">${story.icon}</div>
+                    <div class="story-title">${story.title}</div>
+                    <div class="story-description">${story.description}</div>
+                </div>
+            `).join('');
+        }
+        function openStory(storyId) {
+            currentStory = stories.find(s => s.id === storyId);
+            currentPage = 0;
+            document.getElementById('storySelector').style.display = 'none';
+            document.getElementById('storyViewer').classList.add('active');
+            document.getElementById('storyTitle').textContent = currentStory.title;
+            renderPages();
+            updateButtons();
+            speak(`Let's read the story: ${currentStory.title}`);
+        }
+        function renderPages() {
+            const container = document.getElementById('storyPages');
+            container.innerHTML = currentStory.pages.map((page, index) => `
+                <div class="story-page ${index === currentPage ? 'active' : ''}" data-page="${index}">
+                    <div class="page-icon">${page.icon}</div>
+                    <div class="page-text">${page.text}</div>
+                    <div class="page-number">Page ${index + 1} of ${currentStory.pages.length}</div>
+                </div>
+            `).join('');
+        }
+        function updateButtons() {
+            document.getElementById('prevBtn').disabled = currentPage === 0;
+            document.getElementById('nextBtn').disabled = currentPage === currentStory.pages.length - 1;
+            const completionMsg = document.getElementById('completionMsg');
+            if (currentPage === currentStory.pages.length - 1) {
+                completionMsg.classList.add('show');
+            } else {
+                completionMsg.classList.remove('show');
+            }
+        }
+        function nextPage() {
+            if (currentPage < currentStory.pages.length - 1) {
+                currentPage++;
+                renderPages();
+                updateButtons();
+            }
+        }
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                renderPages();
+                updateButtons();
+            }
+        }
+        function readCurrentPage() {
+            const page = currentStory.pages[currentPage];
+            speak(page.text);
+        }
+        function closeStory() {
+            document.getElementById('storyViewer').classList.remove('active');
+            document.getElementById('storySelector').style.display = 'grid';
+            currentStory = null;
+            currentPage = 0;
+            speak('Choose another story');
+        }
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.rate = 0.75; u.pitch = 1.05; u.volume = 0.9;
+                speechSynthesis.speak(u);
+            }
+        }
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
