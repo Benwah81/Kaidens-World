@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📋 First-Then Board - Kaiden's World</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%); min-height: 100vh; padding: 20px; }
+        .back-button { position: fixed; top: 20px; left: 20px; background: white; color: #3f51b5; border: 2px solid #3f51b5; padding: 12px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; }
+        .back-button:hover { transform: scale(1.05); }
+        .header { text-align: center; margin: 60px 0 30px; color: #3f51b5; }
+        .header h1 { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2em; color: #666; }
+        .board-container { max-width: 900px; margin: 0 auto; }
+        .first-then-board { display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; background: white; border-radius: 25px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .board-label { font-size: 2em; font-weight: bold; color: #3f51b5; margin-bottom: 20px; padding: 10px; border-radius: 15px; background: #e8eaf6; text-align: center; }
+        .board-label.first { background: #ffebee; color: #f44336; }
+        .board-label.then { background: #e8f5e9; color: #4caf50; }
+        .drop-zone { min-height: 250px; border: 4px dashed #3f51b5; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; transition: all 0.3s ease; background: #f8f9fa; }
+        .drop-zone.drag-over { border-color: #4caf50; background: #e8f5e9; transform: scale(1.05); }
+        .drop-zone.first { border-color: #f44336; }
+        .drop-zone.then { border-color: #4caf50; }
+        .placeholder-text { color: #999; font-size: 1.2em; text-align: center; pointer-events: none; }
+        .arrow { font-size: 4em; color: #3f51b5; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        .activity-bank { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .bank-title { font-size: 1.5em; font-weight: bold; color: #3f51b5; margin-bottom: 20px; text-align: center; }
+        .activities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
+        .activity-card { background: #e8eaf6; border-radius: 15px; padding: 15px; text-align: center; cursor: grab; transition: all 0.3s ease; border: 3px solid #3f51b5; min-height: 110px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .activity-card:active { cursor: grabbing; opacity: 0.5; }
+        .activity-card:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .activity-icon { font-size: 2.5em; margin-bottom: 8px; }
+        .activity-name { font-size: 0.9em; font-weight: bold; color: #3f51b5; }
+        .placed-activity { background: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); animation: dropIn 0.5s ease-out; }
+        .placed-activity .activity-icon { font-size: 3.5em; }
+        .placed-activity .activity-name { font-size: 1.2em; margin-top: 10px; }
+        .remove-btn { background: #f44336; color: white; border: none; padding: 8px 15px; border-radius: 10px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        .remove-btn:hover { background: #d32f2f; transform: scale(1.05); }
+        @keyframes dropIn { 0% { transform: scale(0.5); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+        .control-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
+        .btn { padding: 15px 30px; border: none; border-radius: 20px; font-size: 1.2em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .btn-play { background: #4caf50; color: white; }
+        .btn-play:hover { background: #45a049; transform: scale(1.05); }
+        .btn-clear { background: #ff9800; color: white; }
+        .btn-clear:hover { background: #f57c00; transform: scale(1.05); }
+        .example-boards { background: white; border-radius: 20px; padding: 25px; margin-top: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .example-title { font-size: 1.5em; font-weight: bold; color: #3f51b5; margin-bottom: 20px; text-align: center; }
+        .example-item { background: #f8f9fa; padding: 15px; border-radius: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.3s ease; }
+        .example-item:hover { background: #e8eaf6; transform: translateX(5px); }
+        @media (max-width: 768px) {
+            .first-then-board { grid-template-columns: 1fr; padding: 20px; }
+            .arrow { transform: rotate(90deg); font-size: 3em; }
+            .activities-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">🏠 Back</a>
+    <div class="header">
+        <h1>📋 First-Then Board 📋</h1>
+        <p class="subtitle">First do this, THEN you get that!</p>
+    </div>
+    <div class="board-container">
+        <div class="first-then-board">
+            <div class="board-section">
+                <div class="board-label first">FIRST</div>
+                <div class="drop-zone first" id="firstZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'first')">
+                    <div class="placeholder-text">Drag activity here</div>
+                </div>
+            </div>
+            <div class="arrow">➡️</div>
+            <div class="board-section">
+                <div class="board-label then">THEN</div>
+                <div class="drop-zone then" id="thenZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'then')">
+                    <div class="placeholder-text">Drag reward here</div>
+                </div>
+            </div>
+        </div>
+        <div class="control-buttons">
+            <button class="btn btn-play" onclick="playSequence()">▶️ Say It!</button>
+            <button class="btn btn-clear" onclick="clearBoard()">🔄 Clear</button>
+        </div>
+        <div class="activity-bank">
+            <div class="bank-title">📦 Activities & Rewards</div>
+            <div class="activities-grid" id="activitiesGrid"></div>
+        </div>
+        <div class="example-boards">
+            <div class="example-title">💡 Quick Examples</div>
+            <div class="example-item" onclick="loadExample('homework-tv')">🏠 First homework, then TV</div>
+            <div class="example-item" onclick="loadExample('cleanup-play')">🧹 First clean up, then play</div>
+            <div class="example-item" onclick="loadExample('eat-dessert')">🍽️ First dinner, then dessert</div>
+            <div class="example-item" onclick="loadExample('brush-story')">🦷 First brush teeth, then story</div>
+        </div>
+    </div>
+    <script>
+        const activities = [
+            { id: 'homework', icon: '📚', name: 'Homework' }, { id: 'cleanup', icon: '🧹', name: 'Clean Up' },
+            { id: 'eat', icon: '🍽️', name: 'Eat Dinner' }, { id: 'brush', icon: '🦷', name: 'Brush Teeth' },
+            { id: 'bath', icon: '🛁', name: 'Take Bath' }, { id: 'dress', icon: '👕', name: 'Get Dressed' },
+            { id: 'shoes', icon: '👟', name: 'Put On Shoes' }, { id: 'coat', icon: '🧥', name: 'Wear Coat' },
+            { id: 'tv', icon: '📺', name: 'TV Time' }, { id: 'play', icon: '🎮', name: 'Play Time' },
+            { id: 'dessert', icon: '🍦', name: 'Dessert' }, { id: 'story', icon: '📖', name: 'Story Time' },
+            { id: 'outside', icon: '🌳', name: 'Go Outside' }, { id: 'game', icon: '🎲', name: 'Play Game' },
+            { id: 'music', icon: '🎵', name: 'Music Time' }, { id: 'tablet', icon: '📱', name: 'Tablet Time' }
+        ];
+        let firstActivity = null, thenActivity = null;
+        function init() {
+            document.getElementById('activitiesGrid').innerHTML = activities.map(a => 
+                `<div class="activity-card" draggable="true" data-id="${a.id}" ondragstart="handleDragStart(event)">
+                    <div class="activity-icon">${a.icon}</div><div class="activity-name">${a.name}</div>
+                </div>`
+            ).join('');
+        }
+        function handleDragStart(e) { e.dataTransfer.setData('activityId', e.currentTarget.dataset.id); e.currentTarget.style.opacity = '0.5'; }
+        function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+        function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+        function handleDrop(e, zone) {
+            e.preventDefault(); e.currentTarget.classList.remove('drag-over');
+            const activityId = e.dataTransfer.getData('activityId');
+            const activity = activities.find(a => a.id === activityId);
+            if (activity) {
+                if (zone === 'first') { firstActivity = activity; updateZone('firstZone', activity); }
+                else { thenActivity = activity; updateZone('thenZone', activity); }
+                document.querySelectorAll('.activity-card').forEach(c => c.style.opacity = '1');
+            }
+        }
+        function updateZone(zoneId, activity) {
+            document.getElementById(zoneId).innerHTML = `<div class="placed-activity">
+                <div class="activity-icon">${activity.icon}</div><div class="activity-name">${activity.name}</div>
+                <button class="remove-btn" onclick="removeFromZone('${zoneId}')">Remove</button></div>`;
+        }
+        function removeFromZone(zoneId) {
+            const isFirst = zoneId === 'firstZone';
+            if (isFirst) { firstActivity = null; document.getElementById(zoneId).innerHTML = '<div class="placeholder-text">Drag activity here</div>'; }
+            else { thenActivity = null; document.getElementById(zoneId).innerHTML = '<div class="placeholder-text">Drag reward here</div>'; }
+            speak(isFirst ? 'First activity removed' : 'Then activity removed');
+        }
+        function playSequence() {
+            if (!firstActivity || !thenActivity) { speak('Please add both activities'); return; }
+            speak(`First ${firstActivity.name}, THEN ${thenActivity.name}!`);
+            createCelebration();
+        }
+        function clearBoard() {
+            firstActivity = null; thenActivity = null;
+            document.getElementById('firstZone').innerHTML = '<div class="placeholder-text">Drag activity here</div>';
+            document.getElementById('thenZone').innerHTML = '<div class="placeholder-text">Drag reward here</div>';
+            speak('Board cleared');
+        }
+        function loadExample(exampleId) {
+            const examples = { 'homework-tv': ['homework', 'tv'], 'cleanup-play': ['cleanup', 'play'], 
+                'eat-dessert': ['eat', 'dessert'], 'brush-story': ['brush', 'story'] };
+            const [firstId, thenId] = examples[exampleId];
+            firstActivity = activities.find(a => a.id === firstId);
+            thenActivity = activities.find(a => a.id === thenId);
+            updateZone('firstZone', firstActivity); updateZone('thenZone', thenActivity);
+            setTimeout(() => playSequence(), 500);
+        }
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const u = new SpeechSynthesisUtterance(text); u.rate = 0.8; u.pitch = 1.1; speechSynthesis.speak(u);
+            }
+        }
+        function createCelebration() {
+            const emojis = ['⭐','✨','🌟','🎉','💫','👏'];
+            for (let i = 0; i < 8; i++) setTimeout(() => {
+                const e = document.createElement('div');
+                e.style.cssText = 'position:fixed;pointer-events:none;font-size:3em;z-index:1000;animation:celebration 2s ease-out forwards;';
+                e.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                e.style.left = Math.random() * window.innerWidth + 'px';
+                e.style.top = window.innerHeight + 'px';
+                document.body.appendChild(e);
+                const s = document.createElement('style');
+                s.textContent = '@keyframes celebration{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(-300px) rotate(360deg);opacity:0}}';
+                document.head.appendChild(s);
+                setTimeout(() => { if(e.parentNode)e.parentNode.removeChild(e); if(s.parentNode)s.parentNode.removeChild(s); }, 2000);
+            }, i * 150);
+        }
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
