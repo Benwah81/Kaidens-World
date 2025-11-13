@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎙️ Voice Recorder - Kaiden's World</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%); min-height: 100vh; padding: 20px; }
+        .back-button { position: fixed; top: 20px; left: 20px; background: white; color: #5e35b1; border: 2px solid #5e35b1; padding: 12px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; }
+        .back-button:hover { transform: scale(1.05); }
+        .header { text-align: center; margin: 60px 0 30px; color: #5e35b1; }
+        .header h1 { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2em; color: #666; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .recorder-panel { background: white; border-radius: 25px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px; text-align: center; }
+        .record-button { width: 180px; height: 180px; border-radius: 50%; background: linear-gradient(135deg, #f44336 0%, #e91e63 100%); border: 8px solid white; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(244,67,54,0.4); display: flex; align-items: center; justify-content: center; font-size: 4em; margin: 20px auto; }
+        .record-button:hover { transform: scale(1.1); }
+        .record-button:active { transform: scale(0.95); }
+        .record-button.recording { animation: pulse 1s ease-in-out infinite; background: linear-gradient(135deg, #ff1744 0%, #f50057 100%); }
+        @keyframes pulse { 0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(244,67,54,0.4); } 50% { transform: scale(1.1); box-shadow: 0 15px 40px rgba(244,67,54,0.6); } }
+        .status-text { font-size: 1.5em; font-weight: bold; color: #5e35b1; margin: 20px 0; }
+        .timer-text { font-size: 2em; font-weight: bold; color: #f44336; font-family: monospace; }
+        .input-group { margin: 20px 0; }
+        .input-label { font-size: 1.2em; font-weight: bold; color: #666; display: block; margin-bottom: 10px; }
+        .text-input { width: 100%; max-width: 500px; padding: 15px; font-size: 1.1em; border: 3px solid #5e35b1; border-radius: 15px; text-align: center; }
+        .category-select { width: 100%; max-width: 500px; padding: 15px; font-size: 1.1em; border: 3px solid #5e35b1; border-radius: 15px; background: white; cursor: pointer; }
+        .btn { padding: 15px 30px; border: none; border-radius: 20px; font-size: 1.2em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: all 0.3s ease; margin: 5px; }
+        .btn-save { background: #4caf50; color: white; }
+        .btn-save:hover { background: #45a049; transform: scale(1.05); }
+        .btn-save:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-cancel { background: #ff9800; color: white; }
+        .btn-cancel:hover { background: #f57c00; transform: scale(1.05); }
+        .btn-play { background: #2196f3; color: white; }
+        .btn-play:hover { background: #1976d2; transform: scale(1.05); }
+        .recordings-panel { background: white; border-radius: 25px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .panel-title { font-size: 2em; font-weight: bold; color: #5e35b1; margin-bottom: 20px; text-align: center; }
+        .category-filter { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 25px; }
+        .filter-btn { padding: 10px 20px; border: 2px solid #5e35b1; background: white; color: #5e35b1; border-radius: 15px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; }
+        .filter-btn:hover { background: #e8eaf6; transform: scale(1.05); }
+        .filter-btn.active { background: #5e35b1; color: white; }
+        .recordings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .recording-card { background: #f5f5f5; border-radius: 20px; padding: 20px; transition: all 0.3s ease; border: 3px solid transparent; }
+        .recording-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-color: #5e35b1; }
+        .recording-title { font-size: 1.3em; font-weight: bold; color: #333; margin-bottom: 10px; }
+        .recording-category { display: inline-block; background: #e8eaf6; color: #5e35b1; padding: 5px 15px; border-radius: 15px; font-size: 0.9em; margin-bottom: 15px; }
+        .recording-controls { display: flex; gap: 10px; justify-content: center; }
+        .control-btn { padding: 12px 20px; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; font-size: 1em; }
+        .control-btn.play { background: #4caf50; color: white; }
+        .control-btn.play:hover { background: #45a049; }
+        .control-btn.delete { background: #f44336; color: white; }
+        .control-btn.delete:hover { background: #d32f2f; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+        .empty-state-icon { font-size: 5em; margin-bottom: 20px; }
+        .empty-state-text { font-size: 1.3em; }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .record-button { width: 150px; height: 150px; font-size: 3em; }
+            .recordings-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">🏠 Back</a>
+    
+    <div class="header">
+        <h1>🎙️ Voice Recorder 🎙️</h1>
+        <p class="subtitle">Record messages in your voice!</p>
+    </div>
+
+    <div class="container">
+        <div class="recorder-panel">
+            <div class="status-text" id="statusText">Press to start recording</div>
+            <div class="timer-text" id="timerText">0:00</div>
+            
+            <div class="record-button" id="recordButton" onclick="toggleRecording()">
+                <span id="recordIcon">🎙️</span>
+            </div>
+
+            <div id="recordingForm" style="display: none; margin-top: 30px;">
+                <div class="input-group">
+                    <label class="input-label">Message Name:</label>
+                    <input type="text" class="text-input" id="messageName" placeholder="e.g., 'Good Morning'" />
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Category:</label>
+                    <select class="category-select" id="categorySelect">
+                        <option value="Greetings">👋 Greetings</option>
+                        <option value="Feelings">😊 Feelings</option>
+                        <option value="Requests">🙋 Requests</option>
+                        <option value="Activities">🎯 Activities</option>
+                        <option value="Meals">🍽️ Meals</option>
+                        <option value="Bedtime">🌙 Bedtime</option>
+                        <option value="Other">📝 Other</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-play" onclick="playPreview()" id="previewBtn">▶️ Listen</button>
+                <button class="btn btn-save" onclick="saveRecording()" id="saveBtn">💾 Save</button>
+                <button class="btn btn-cancel" onclick="cancelRecording()">❌ Cancel</button>
+            </div>
+        </div>
+
+        <div class="recordings-panel">
+            <div class="panel-title">📚 My Recordings</div>
+            
+            <div class="category-filter">
+                <button class="filter-btn active" onclick="filterCategory('All')">All</button>
+                <button class="filter-btn" onclick="filterCategory('Greetings')">👋 Greetings</button>
+                <button class="filter-btn" onclick="filterCategory('Feelings')">😊 Feelings</button>
+                <button class="filter-btn" onclick="filterCategory('Requests')">🙋 Requests</button>
+                <button class="filter-btn" onclick="filterCategory('Activities')">🎯 Activities</button>
+                <button class="filter-btn" onclick="filterCategory('Meals')">🍽️ Meals</button>
+                <button class="filter-btn" onclick="filterCategory('Bedtime')">🌙 Bedtime</button>
+                <button class="filter-btn" onclick="filterCategory('Other')">📝 Other</button>
+            </div>
+
+            <div class="recordings-grid" id="recordingsGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let recordingBlob;
+        let isRecording = false;
+        let recordingTime = 0;
+        let timerInterval;
+        let currentFilter = 'All';
+
+        // Initialize
+        loadRecordings();
+
+        async function toggleRecording() {
+            if (!isRecording) {
+                await startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    recordingBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    document.getElementById('recordingForm').style.display = 'block';
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                recordingTime = 0;
+
+                document.getElementById('recordButton').classList.add('recording');
+                document.getElementById('recordIcon').textContent = '⏹️';
+                document.getElementById('statusText').textContent = 'Recording... Press to stop';
+                
+                timerInterval = setInterval(() => {
+                    recordingTime++;
+                    const minutes = Math.floor(recordingTime / 60);
+                    const seconds = recordingTime % 60;
+                    document.getElementById('timerText').textContent = 
+                        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }, 1000);
+
+                speak('Recording started');
+            } catch (error) {
+                alert('Could not access microphone. Please allow microphone access.');
+                console.error('Error accessing microphone:', error);
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                clearInterval(timerInterval);
+
+                document.getElementById('recordButton').classList.remove('recording');
+                document.getElementById('recordIcon').textContent = '✅';
+                document.getElementById('statusText').textContent = 'Recording complete!';
+                
+                speak('Recording stopped');
+            }
+        }
+
+        function playPreview() {
+            if (recordingBlob) {
+                const audio = new Audio(URL.createObjectURL(recordingBlob));
+                audio.play();
+            }
+        }
+
+        function saveRecording() {
+            const name = document.getElementById('messageName').value.trim();
+            const category = document.getElementById('categorySelect').value;
+
+            if (!name) {
+                alert('Please enter a name for your message!');
+                return;
+            }
+
+            if (!recordingBlob) {
+                alert('No recording to save!');
+                return;
+            }
+
+            // Convert blob to base64 for localStorage
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64Audio = reader.result;
+                
+                const recording = {
+                    id: Date.now(),
+                    name: name,
+                    category: category,
+                    audio: base64Audio,
+                    date: new Date().toLocaleDateString()
+                };
+
+                // Save to localStorage
+                let recordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+                recordings.push(recording);
+                localStorage.setItem('voiceRecordings', JSON.stringify(recordings));
+
+                speak('Recording saved!');
+                celebrate();
+                
+                // Reset
+                resetRecorder();
+                loadRecordings();
+            };
+            reader.readAsDataURL(recordingBlob);
+        }
+
+        function cancelRecording() {
+            resetRecorder();
+            speak('Recording cancelled');
+        }
+
+        function resetRecorder() {
+            recordingBlob = null;
+            audioChunks = [];
+            document.getElementById('recordingForm').style.display = 'none';
+            document.getElementById('messageName').value = '';
+            document.getElementById('recordButton').classList.remove('recording');
+            document.getElementById('recordIcon').textContent = '🎙️';
+            document.getElementById('statusText').textContent = 'Press to start recording';
+            document.getElementById('timerText').textContent = '0:00';
+        }
+
+        function loadRecordings() {
+            const recordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+            const grid = document.getElementById('recordingsGrid');
+            
+            const filtered = currentFilter === 'All' 
+                ? recordings 
+                : recordings.filter(r => r.category === currentFilter);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">🎙️</div>
+                        <div class="empty-state-text">No recordings yet. Start recording!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(recording => `
+                <div class="recording-card">
+                    <div class="recording-title">${recording.name}</div>
+                    <div class="recording-category">${getCategoryEmoji(recording.category)} ${recording.category}</div>
+                    <div style="color: #999; font-size: 0.9em; margin-bottom: 15px;">${recording.date}</div>
+                    <div class="recording-controls">
+                        <button class="control-btn play" onclick="playRecording(${recording.id})">▶️ Play</button>
+                        <button class="control-btn delete" onclick="deleteRecording(${recording.id})">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getCategoryEmoji(category) {
+            const emojis = {
+                'Greetings': '👋',
+                'Feelings': '😊',
+                'Requests': '🙋',
+                'Activities': '🎯',
+                'Meals': '🍽️',
+                'Bedtime': '🌙',
+                'Other': '📝'
+            };
+            return emojis[category] || '📝';
+        }
+
+        function filterCategory(category) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            loadRecordings();
+        }
+
+        function playRecording(id) {
+            const recordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+            const recording = recordings.find(r => r.id === id);
+            
+            if (recording) {
+                const audio = new Audio(recording.audio);
+                audio.play();
+            }
+        }
+
+        function deleteRecording(id) {
+            if (confirm('Delete this recording?')) {
+                let recordings = JSON.parse(localStorage.getItem('voiceRecordings') || '[]');
+                recordings = recordings.filter(r => r.id !== id);
+                localStorage.setItem('voiceRecordings', JSON.stringify(recordings));
+                loadRecordings();
+                speak('Recording deleted');
+            }
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9;
+                utterance.pitch = 1.1;
+                utterance.volume = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function celebrate() {
+            const emojis = ['🎉', '⭐', '✨', '🎙️', '🌟', '💜'];
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.style.cssText = `
+                        position: fixed;
+                        font-size: 3em;
+                        pointer-events: none;
+                        z-index: 9999;
+                        animation: celebrate 2s ease-out forwards;
+                    `;
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.left = Math.random() * window.innerWidth + 'px';
+                    emoji.style.top = window.innerHeight + 'px';
+                    document.body.appendChild(emoji);
+                    
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes celebrate {
+                            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                            100% { transform: translateY(-${window.innerHeight + 100}px) rotate(360deg); opacity: 0; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                    setTimeout(() => {
+                        if (emoji.parentNode) emoji.parentNode.removeChild(emoji);
+                        if (style.parentNode) style.parentNode.removeChild(style);
+                    }, 2000);
+                }, i * 100);
+            }
+        }
+
+        // Welcome message
+        window.addEventListener('DOMContentLoaded', () => {
+            speak('Welcome to voice recorder! Press the button to start recording your own messages.');
+        });
+    </script>
+</body>
+</html>
