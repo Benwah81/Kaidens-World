@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Art Board - Kaiden's World</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); min-height: 100vh; padding: 20px; }
+        .back-button { position: fixed; top: 20px; left: 20px; background: white; color: #ff6b6b; border: 2px solid #ff6b6b; padding: 12px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; }
+        .back-button:hover { transform: scale(1.05); }
+        .header { text-align: center; margin: 60px 0 20px; color: #ff6b6b; }
+        .header h1 { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2em; color: #666; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .tools-panel { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: flex; gap: 20px; flex-wrap: wrap; align-items: center; justify-content: center; }
+        .tool-section { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .tool-label { font-weight: bold; color: #666; margin-right: 5px; }
+        .color-btn { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.2); transition: all 0.3s ease; }
+        .color-btn:hover { transform: scale(1.15); }
+        .color-btn.active { border-color: #333; transform: scale(1.2); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+        .size-btn { padding: 10px 20px; border: 2px solid #ff6b6b; background: white; color: #ff6b6b; border-radius: 15px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; }
+        .size-btn:hover { background: #ff6b6b; color: white; transform: scale(1.05); }
+        .size-btn.active { background: #ff6b6b; color: white; }
+        .action-btn { padding: 12px 25px; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-size: 1em; }
+        .btn-clear { background: #ff9800; color: white; }
+        .btn-clear:hover { background: #f57c00; transform: scale(1.05); }
+        .btn-save { background: #4caf50; color: white; }
+        .btn-save:hover { background: #45a049; transform: scale(1.05); }
+        .btn-undo { background: #2196f3; color: white; }
+        .btn-undo:hover { background: #1976d2; transform: scale(1.05); }
+        .canvas-container { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 20px; position: relative; }
+        #drawingCanvas { border: 3px solid #ddd; border-radius: 15px; cursor: crosshair; display: block; touch-action: none; background: white; }
+        .stamp-panel { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .stamp-btn { font-size: 2em; padding: 10px; border: 2px solid #ddd; border-radius: 10px; background: white; cursor: pointer; transition: all 0.3s ease; }
+        .stamp-btn:hover { transform: scale(1.2); background: #f0f0f0; }
+        .stamp-btn.active { border-color: #ff6b6b; background: #ffebee; }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .tools-panel { padding: 15px; gap: 10px; }
+            .color-btn { width: 40px; height: 40px; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">🏠 Back</a>
+    
+    <div class="header">
+        <h1>🎨 My Art Board 🎨</h1>
+        <p class="subtitle">Draw and create beautiful art!</p>
+    </div>
+
+    <div class="container">
+        <div class="tools-panel">
+            <div class="tool-section">
+                <span class="tool-label">🎨 Colors:</span>
+                <div class="color-btn active" style="background: #ff6b6b;" onclick="selectColor('#ff6b6b')"></div>
+                <div class="color-btn" style="background: #4ecdc4;" onclick="selectColor('#4ecdc4')"></div>
+                <div class="color-btn" style="background: #45b7d1;" onclick="selectColor('#45b7d1')"></div>
+                <div class="color-btn" style="background: #f9ca24;" onclick="selectColor('#f9ca24')"></div>
+                <div class="color-btn" style="background: #f38181;" onclick="selectColor('#f38181')"></div>
+                <div class="color-btn" style="background: #aa96da;" onclick="selectColor('#aa96da')"></div>
+                <div class="color-btn" style="background: #95e1d3;" onclick="selectColor('#95e1d3')"></div>
+                <div class="color-btn" style="background: #feca57;" onclick="selectColor('#feca57')"></div>
+                <div class="color-btn" style="background: #ee5a6f;" onclick="selectColor('#ee5a6f')"></div>
+                <div class="color-btn" style="background: #333;" onclick="selectColor('#333')"></div>
+                <div class="color-btn" style="background: white; border-color: #333;" onclick="selectColor('#ffffff')"></div>
+            </div>
+            
+            <div class="tool-section">
+                <span class="tool-label">📏 Size:</span>
+                <button class="size-btn" onclick="selectSize(5)">Small</button>
+                <button class="size-btn active" onclick="selectSize(15)">Medium</button>
+                <button class="size-btn" onclick="selectSize(30)">Large</button>
+                <button class="size-btn" onclick="selectSize(50)">Extra Large</button>
+            </div>
+        </div>
+
+        <div class="tools-panel">
+            <div class="tool-section">
+                <span class="tool-label">✨ Stamps:</span>
+                <div class="stamp-panel">
+                    <button class="stamp-btn" onclick="selectStamp('⭐')">⭐</button>
+                    <button class="stamp-btn" onclick="selectStamp('❤️')">❤️</button>
+                    <button class="stamp-btn" onclick="selectStamp('🌈')">🌈</button>
+                    <button class="stamp-btn" onclick="selectStamp('🌟')">🌟</button>
+                    <button class="stamp-btn" onclick="selectStamp('🎈')">🎈</button>
+                    <button class="stamp-btn" onclick="selectStamp('🦋')">🦋</button>
+                    <button class="stamp-btn" onclick="selectStamp('🌺')">🌺</button>
+                    <button class="stamp-btn" onclick="selectStamp('☀️')">☀️</button>
+                    <button class="stamp-btn" onclick="selectStamp('🐻')">🐻</button>
+                    <button class="stamp-btn" onclick="selectStamp('🎨')">🎨</button>
+                </div>
+            </div>
+            
+            <div class="tool-section">
+                <button class="action-btn btn-undo" onclick="undo()">↩️ Undo</button>
+                <button class="action-btn btn-clear" onclick="clearCanvas()">🗑️ Clear</button>
+                <button class="action-btn btn-save" onclick="saveDrawing()">💾 Save Art</button>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="drawingCanvas" width="1200" height="700"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let currentColor = '#ff6b6b';
+        let currentSize = 15;
+        let currentStamp = null;
+        let history = [];
+        let historyStep = -1;
+
+        // Resize canvas for mobile
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const maxWidth = Math.min(1200, container.offsetWidth - 40);
+            const maxHeight = Math.min(700, window.innerHeight - 300);
+            canvas.width = maxWidth;
+            canvas.height = maxHeight;
+            restoreCanvas();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Save canvas state for undo
+        function saveState() {
+            historyStep++;
+            if (historyStep < history.length) {
+                history.length = historyStep;
+            }
+            history.push(canvas.toDataURL());
+        }
+
+        // Initial state
+        saveState();
+
+        function selectColor(color) {
+            currentColor = color;
+            currentStamp = null;
+            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('.stamp-btn').forEach(btn => btn.classList.remove('active'));
+            speak('Color selected');
+        }
+
+        function selectSize(size) {
+            currentSize = size;
+            document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            speak(`${event.target.textContent} size`);
+        }
+
+        function selectStamp(emoji) {
+            currentStamp = emoji;
+            document.querySelectorAll('.stamp-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            speak(`${emoji} stamp`);
+        }
+
+        function getPosition(e) {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches ? e.touches[0] : e;
+            return {
+                x: (touch.clientX - rect.left) * (canvas.width / rect.width),
+                y: (touch.clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        // Drawing functions
+        function startDrawing(e) {
+            e.preventDefault();
+            const pos = getPosition(e);
+            
+            if (currentStamp) {
+                // Place stamp
+                ctx.font = `${currentSize * 3}px Arial`;
+                ctx.fillText(currentStamp, pos.x, pos.y);
+                saveState();
+            } else {
+                // Start drawing
+                isDrawing = true;
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+            }
+        }
+
+        function draw(e) {
+            if (!isDrawing || currentStamp) return;
+            e.preventDefault();
+            
+            const pos = getPosition(e);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = currentSize;
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                saveState();
+            }
+        }
+
+        // Mouse events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        // Touch events
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function undo() {
+            if (historyStep > 0) {
+                historyStep--;
+                restoreCanvas();
+                speak('Undo');
+            }
+        }
+
+        function restoreCanvas() {
+            if (historyStep >= 0 && history[historyStep]) {
+                const img = new Image();
+                img.src = history[historyStep];
+                img.onload = function() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+            }
+        }
+
+        function clearCanvas() {
+            if (confirm('Clear your artwork?')) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                saveState();
+                speak('Canvas cleared');
+            }
+        }
+
+        function saveDrawing() {
+            try {
+                const dataURL = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = `kaiden-art-${Date.now()}.png`;
+                link.href = dataURL;
+                link.click();
+                speak('Art saved!');
+                celebrate();
+            } catch (error) {
+                alert('Error saving art. Please try again!');
+            }
+        }
+
+        function celebrate() {
+            const emojis = ['🎨', '✨', '⭐', '🌟', '🎉', '👏'];
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.style.cssText = `
+                        position: fixed;
+                        font-size: 3em;
+                        pointer-events: none;
+                        z-index: 9999;
+                        animation: celebrate 2s ease-out forwards;
+                    `;
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.left = Math.random() * window.innerWidth + 'px';
+                    emoji.style.top = window.innerHeight + 'px';
+                    document.body.appendChild(emoji);
+                    
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes celebrate {
+                            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                            100% { transform: translateY(-${window.innerHeight + 100}px) rotate(360deg); opacity: 0; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                    setTimeout(() => {
+                        if (emoji.parentNode) emoji.parentNode.removeChild(emoji);
+                        if (style.parentNode) style.parentNode.removeChild(style);
+                    }, 2000);
+                }, i * 100);
+            }
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9;
+                utterance.pitch = 1.1;
+                utterance.volume = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Welcome message
+        window.addEventListener('DOMContentLoaded', () => {
+            speak('Welcome to your art board! Start drawing!');
+        });
+    </script>
+</body>
+</html>
