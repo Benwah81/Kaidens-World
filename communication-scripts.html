@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💬 Communication Scripts - Kaiden's World</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%); min-height: 100vh; padding: 20px; }        .back-button { position: fixed; top: 20px; left: 20px; background: white; color: #2196f3; border: 2px solid #2196f3; padding: 12px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; }
+        .back-button:hover { transform: scale(1.05); }
+        .header { text-align: center; margin: 60px 0 30px; color: #2196f3; }
+        .header h1 { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2em; color: #666; }
+        .main-container { max-width: 1200px; margin: 0 auto; }
+        .category-tabs { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; }
+        .tab-btn { padding: 15px 25px; border: 3px solid #2196f3; background: white; color: #2196f3; border-radius: 20px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
+        .tab-btn:hover, .tab-btn.active { background: #2196f3; color: white; transform: scale(1.05); }
+        .scripts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .script-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.3s ease; border: 3px solid transparent; }
+        .script-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-color: #2196f3; }
+        .script-icon { font-size: 3em; margin-bottom: 15px; text-align: center; }
+        .script-title { font-size: 1.3em; font-weight: bold; color: #2196f3; margin-bottom: 10px; text-align: center; }
+        .script-text { font-size: 1.1em; color: #333; text-align: center; background: #e3f2fd; padding: 15px; border-radius: 15px; margin-bottom: 10px; font-weight: bold; }
+        .script-usage { font-size: 0.9em; color: #666; text-align: center; font-style: italic; }
+        .custom-panel { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .panel-title { font-size: 1.5em; font-weight: bold; color: #2196f3; margin-bottom: 20px; text-align: center; }
+        .custom-input { width: 100%; padding: 15px; font-size: 1.2em; border: 3px solid #2196f3; border-radius: 15px; margin-bottom: 15px; }
+        .btn { padding: 15px 30px; border: none; border-radius: 20px; font-size: 1.2em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: all 0.3s ease; }
+        .btn-primary { background: #2196f3; color: white; }
+        .btn-primary:hover { background: #1976d2; transform: scale(1.05); }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .scripts-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">🏠 Back</a>
+    
+    <div class="header">
+        <h1>💬 Communication Scripts 💬</h1>
+        <p class="subtitle">Common phrases for everyday situations!</p>
+    </div>
+
+    <div class="main-container">
+        <div class="category-tabs">
+            <button class="tab-btn active" onclick="showCategory('greetings')">👋 Greetings</button>
+            <button class="tab-btn" onclick="showCategory('requests')">🙏 Requests</button>
+            <button class="tab-btn" onclick="showCategory('feelings')">😊 Feelings</button>
+            <button class="tab-btn" onclick="showCategory('social')">🤝 Social</button>
+            <button class="tab-btn" onclick="showCategory('manners')">✨ Manners</button>
+        </div>
+
+        <div id="scriptsContainer" class="scripts-grid"></div>
+
+        <div class="custom-panel">
+            <div class="panel-title">✏️ Create Your Own Script</div>
+            <input type="text" class="custom-input" id="customScript" placeholder="Type your own phrase..." />
+            <div style="text-align: center;">
+                <button class="btn btn-primary" onclick="speakCustom()">🔊 Say It</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scripts = {
+            greetings: [
+                { icon: '👋', title: 'Hello', text: 'Hello!', usage: 'When you see someone' },
+                { icon: '👋', title: 'Hi', text: 'Hi!', usage: 'Friendly greeting' },
+                { icon: '🌅', title: 'Good Morning', text: 'Good morning!', usage: 'In the morning' },
+                { icon: '🌙', title: 'Good Night', text: 'Good night!', usage: 'Before bed' },
+                { icon: '👋', title: 'Goodbye', text: 'Goodbye!', usage: 'When leaving' },
+                { icon: '👋', title: 'See You Later', text: 'See you later!', usage: 'When leaving friends' },
+                { icon: '😊', title: 'How Are You', text: 'How are you?', usage: 'Ask how someone feels' },
+                { icon: '👍', title: 'I\'m Good', text: 'I\'m good, thanks!', usage: 'Answer when asked' }
+            ],
+            requests: [
+                { icon: '🙏', title: 'Help Please', text: 'Can you help me please?', usage: 'When you need help' },
+                { icon: '🎮', title: 'Can I Play', text: 'Can I play with you?', usage: 'Join others playing' },
+                { icon: '🚽', title: 'Bathroom', text: 'I need to use the bathroom.', usage: 'Bathroom break' },
+                { icon: '🍽️', title: 'Want Snack', text: 'Can I have a snack?', usage: 'When hungry' },
+                { icon: '💧', title: 'Need Water', text: 'Can I have water please?', usage: 'When thirsty' },
+                { icon: '⏸️', title: 'Need Break', text: 'I need a break please.', usage: 'When tired' },
+                { icon: '🤔', title: 'I Don\'t Understand', text: 'I don\'t understand. Can you explain?', usage: 'Need clarification' },
+                { icon: '⏰', title: 'Not Ready', text: 'I\'m not ready yet.', usage: 'Need more time' }
+            ],
+            feelings: [
+                { icon: '😊', title: 'I\'m Happy', text: 'I\'m happy!', usage: 'Share good feelings' },
+                { icon: '😢', title: 'I\'m Sad', text: 'I\'m sad.', usage: 'Share sad feelings' },
+                { icon: '😠', title: 'I\'m Mad', text: 'I\'m mad.', usage: 'Share angry feelings' },
+                { icon: '😰', title: 'I\'m Scared', text: 'I\'m scared.', usage: 'Share scared feelings' },
+                { icon: '😴', title: 'I\'m Tired', text: 'I\'m tired.', usage: 'When you need rest' },
+                { icon: '🤢', title: 'I Don\'t Feel Good', text: 'I don\'t feel good.', usage: 'When sick' },
+                { icon: '😣', title: 'It Hurts', text: 'It hurts.', usage: 'When in pain' },
+                { icon: '❤️', title: 'I Love You', text: 'I love you!', usage: 'Show love to family' }
+            ],
+            social: [
+                { icon: '🎉', title: 'That\'s Cool', text: 'That\'s so cool!', usage: 'Show interest' },
+                { icon: '👍', title: 'Good Job', text: 'Good job!', usage: 'Encourage others' },
+                { icon: '🎮', title: 'Your Turn', text: 'It\'s your turn!', usage: 'Taking turns' },
+                { icon: '🤝', title: 'Can I Join', text: 'Can I join you?', usage: 'Join group activity' },
+                { icon: '⏸️', title: 'Wait Please', text: 'Wait, please!', usage: 'Ask someone to wait' },
+                { icon: '🙋', title: 'I Have Question', text: 'I have a question.', usage: 'Ask for attention' },
+                { icon: '✅', title: 'I Agree', text: 'I agree!', usage: 'Show agreement' },
+                { icon: '💭', title: 'I Think', text: 'I think...', usage: 'Share your idea' }
+            ],
+            manners: [
+                { icon: '🙏', title: 'Please', text: 'Please.', usage: 'Polite request' },
+                { icon: '💚', title: 'Thank You', text: 'Thank you!', usage: 'Show thanks' },
+                { icon: '🙏', title: 'You\'re Welcome', text: 'You\'re welcome!', usage: 'Respond to thanks' },
+                { icon: '😔', title: 'I\'m Sorry', text: 'I\'m sorry.', usage: 'When you make mistake' },
+                { icon: '🤗', title: 'Excuse Me', text: 'Excuse me.', usage: 'Get attention politely' },
+                { icon: '✋', title: 'Stop Please', text: 'Stop, please.', usage: 'Ask to stop politely' },
+                { icon: '👍', title: 'It\'s Okay', text: 'It\'s okay!', usage: 'Forgive someone' },
+                { icon: '🤝', title: 'No Thank You', text: 'No, thank you.', usage: 'Polite decline' }
+            ]
+        };
+
+        let currentCategory = 'greetings';
+
+        function showCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderScripts();
+            speak(`Showing ${category} scripts`);
+        }
+
+        function renderScripts() {
+            const container = document.getElementById('scriptsContainer');
+            const categoryScripts = scripts[currentCategory];
+            
+            container.innerHTML = categoryScripts.map(script => `
+                <div class="script-card" onclick="speakScript('${script.text}', '${script.title}')">
+                    <div class="script-icon">${script.icon}</div>
+                    <div class="script-title">${script.title}</div>
+                    <div class="script-text">"${script.text}"</div>
+                    <div class="script-usage">${script.usage}</div>
+                </div>
+            `).join('');
+        }
+
+        function speakScript(text, title) {
+            speak(text);
+            // Visual feedback
+            event.currentTarget.style.animation = 'none';
+            setTimeout(() => {
+                event.currentTarget.style.animation = 'pulse 0.5s ease-in-out';
+            }, 10);
+        }
+
+        function speakCustom() {
+            const customText = document.getElementById('customScript').value;
+            if (customText.trim()) {
+                speak(customText);
+                document.getElementById('customScript').value = '';
+            } else {
+                speak('Please type something first');
+            }
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.85;
+                utterance.pitch = 1.0;
+                utterance.volume = 0.9;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Add pulse animation
+        const style = document.createElement('style');
+        style.textContent = '@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }';
+        document.head.appendChild(style);
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            renderScripts();
+            speak('Choose a script to practice communication');
+        });
+    </script>
+</body>
+</html>
