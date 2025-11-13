@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚨 Transition Warnings - Kaiden's World</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); min-height: 100vh; padding: 20px; }
+        .back-button { position: fixed; top: 20px; left: 20px; background: white; color: #ff9800; border: 2px solid #ff9800; padding: 12px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; }
+        .back-button:hover { transform: scale(1.05); }
+        .header { text-align: center; margin: 60px 0 30px; color: #ff9800; }
+        .header h1 { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2em; color: #666; }
+        .main-container { max-width: 1000px; margin: 0 auto; }
+        .warning-display { background: white; border-radius: 30px; padding: 50px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px; border: 5px solid #ff9800; position: relative; overflow: hidden; }
+        .warning-display.active { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { border-color: #ff9800; } 50% { border-color: #ffd54f; } }
+        .warning-icon { font-size: 6em; margin-bottom: 20px; animation: bounce 2s ease-in-out infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .warning-time { font-size: 5em; font-weight: bold; color: #ff9800; margin: 20px 0; }
+        .warning-message { font-size: 2em; color: #333; margin-bottom: 20px; font-weight: bold; }
+        .warning-activity { font-size: 1.5em; color: #666; background: #fff3e0; padding: 15px 30px; border-radius: 20px; display: inline-block; }
+        .progress-ring { width: 200px; height: 200px; margin: 20px auto; position: relative; }
+        .progress-ring-circle { transform: rotate(-90deg); transform-origin: 50% 50%; }
+        .setup-panel { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .panel-title { font-size: 1.5em; font-weight: bold; color: #ff9800; margin-bottom: 20px; text-align: center; }
+        .activity-input { width: 100%; padding: 15px; font-size: 1.2em; border: 3px solid #ff9800; border-radius: 15px; margin-bottom: 15px; }
+        .time-selector { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
+        .time-btn { padding: 15px 30px; border: 3px solid #ff9800; background: white; color: #ff9800; border-radius: 20px; font-size: 1.2em; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
+        .time-btn:hover, .time-btn.active { background: #ff9800; color: white; transform: scale(1.05); }
+        .controls { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 15px 30px; border: none; border-radius: 20px; font-size: 1.2em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: all 0.3s ease; }
+        .btn-start { background: #4caf50; color: white; }
+        .btn-start:hover { background: #45a049; transform: scale(1.05); }
+        .btn-stop { background: #f44336; color: white; }
+        .btn-stop:hover { background: #d32f2f; transform: scale(1.05); }
+        .btn-pause { background: #ff9800; color: white; }
+        .btn-pause:hover { background: #f57c00; transform: scale(1.05); }
+        .quick-activities { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+        .activity-card { background: #fff3e0; border: 3px solid #ff9800; border-radius: 15px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        .activity-card:hover { background: #ff9800; color: white; transform: scale(1.05); }
+        .activity-icon { font-size: 2.5em; margin-bottom: 8px; }
+        .activity-name { font-size: 1em; font-weight: bold; }
+        .alert-box { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 60px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); z-index: 2000; text-align: center; border: 5px solid #ff9800; animation: bounceIn 0.6s ease-out; }
+        .alert-box.show { display: block; }
+        @keyframes bounceIn { 0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; } 50% { transform: translate(-50%, -50%) scale(1.1); } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+        .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1999; }
+        .overlay.show { display: block; }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .warning-time { font-size: 3.5em; }
+            .warning-message { font-size: 1.5em; }
+            .warning-display { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">🏠 Back</a>
+    
+    <div class="header">
+        <h1>🚨 Transition Warnings 🚨</h1>
+        <p class="subtitle">Get ready for what's coming next!</p>
+    </div>
+
+    <div class="main-container">
+        <div class="warning-display" id="warningDisplay">
+            <div class="warning-icon" id="warningIcon">⏰</div>
+            <div class="warning-time" id="warningTime">--:--</div>
+            <div class="warning-message" id="warningMessage">Set up your warning</div>
+            <div class="warning-activity" id="warningActivity">Choose an activity below</div>
+            <svg class="progress-ring" id="progressRing">
+                <circle class="progress-ring-circle" stroke="#e0e0e0" stroke-width="12" fill="transparent" r="90" cx="100" cy="100"/>
+                <circle class="progress-ring-circle" id="progressCircle" stroke="#ff9800" stroke-width="12" fill="transparent" r="90" cx="100" cy="100" stroke-dasharray="565.48" stroke-dashoffset="0"/>
+            </svg>
+        </div>
+
+        <div class="setup-panel">
+            <div class="panel-title">⚙️ Set Up Warning</div>
+            
+            <input type="text" class="activity-input" id="activityInput" placeholder="Type activity (e.g., 'time for lunch')" />
+            
+            <div class="panel-title" style="font-size: 1.2em; margin-top: 20px;">⏱️ Warning Time</div>
+            <div class="time-selector">
+                <button class="time-btn" onclick="setWarningTime(60)">1 minute</button>
+                <button class="time-btn" onclick="setWarningTime(120)">2 minutes</button>
+                <button class="time-btn" onclick="setWarningTime(300)">5 minutes</button>
+                <button class="time-btn active" onclick="setWarningTime(600)">10 minutes</button>
+                <button class="time-btn" onclick="setWarningTime(900)">15 minutes</button>
+            </div>
+
+            <div class="panel-title" style="font-size: 1.2em; margin-top: 20px;">🎯 Quick Activities</div>
+            <div class="quick-activities">
+                <div class="activity-card" onclick="selectActivity('Lunch Time', '🍽️')">
+                    <div class="activity-icon">🍽️</div>
+                    <div class="activity-name">Lunch</div>
+                </div>
+                <div class="activity-card" onclick="selectActivity('Time to Go', '🚗')">
+                    <div class="activity-icon">🚗</div>
+                    <div class="activity-name">Go</div>
+                </div>
+                <div class="activity-card" onclick="selectActivity('Bedtime', '🛏️')">
+                    <div class="activity-icon">🛏️</div>
+                    <div class="activity-name">Bedtime</div>
+                </div>
+                <div class="activity-card" onclick="selectActivity('Bath Time', '🛁')">
+                    <div class="activity-icon">🛁</div>
+                    <div class="activity-name">Bath</div>
+                </div>
+                <div class="activity-card" onclick="selectActivity('School Time', '🏫')">
+                    <div class="activity-icon">🏫</div>
+                    <div class="activity-name">School</div>
+                </div>
+                <div class="activity-card" onclick="selectActivity('Play Time', '🎮')">
+                    <div class="activity-icon">🎮</div>
+                    <div class="activity-name">Play</div>
+                </div>
+                <div class="activity-card" onclick="selectActivity('Clean Up', '🧹')">
+                    <div class="activity-icon">🧹</div>
+                    <div class="activity-name">Clean Up</div>
+                </div>
+                <div class="activity-card" onclick="selectActivity('Medicine Time', '💊')">
+                    <div class="activity-icon">💊</div>
+                    <div class="activity-name">Medicine</div>
+                </div>
+            </div>
+
+            <div class="controls" style="margin-top: 30px;">
+                <button class="btn btn-start" id="startBtn" onclick="startWarning()">▶️ Start Warning</button>
+                <button class="btn btn-pause" id="pauseBtn" onclick="pauseWarning()" style="display:none;">⏸️ Pause</button>
+                <button class="btn btn-stop" onclick="stopWarning()">⏹️ Stop</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="alert-box" id="alertBox">
+        <div style="font-size: 5em; margin-bottom: 20px;">⚠️</div>
+        <div style="font-size: 2.5em; font-weight: bold; color: #ff9800; margin-bottom: 15px;">Time's Up!</div>
+        <div style="font-size: 1.5em; color: #666; margin-bottom: 30px;" id="alertActivity">It's time to go!</div>
+        <button class="btn btn-start" onclick="closeAlert()">Okay, I'm Ready!</button>
+    </div>
+
+    <script>
+        let warningSeconds = 600; // Default 10 minutes
+        let remainingSeconds = 0;
+        let totalSeconds = 0;
+        let timerInterval = null;
+        let isRunning = false;
+        let currentActivity = '';
+        let currentIcon = '⏰';
+
+        function setWarningTime(seconds) {
+            warningSeconds = seconds;
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            speak(`Warning time set to ${formatTime(seconds)}`);
+        }
+
+        function selectActivity(activity, icon) {
+            currentActivity = activity;
+            currentIcon = icon;
+            document.getElementById('activityInput').value = activity;
+            document.getElementById('warningActivity').textContent = activity;
+            document.getElementById('warningIcon').textContent = icon;
+            speak(`Activity set to ${activity}`);
+        }
+
+        function startWarning() {
+            const activityInput = document.getElementById('activityInput').value;
+            if (activityInput) {
+                currentActivity = activityInput;
+                document.getElementById('warningActivity').textContent = activityInput;
+            }
+            
+            if (!currentActivity) {
+                speak('Please choose an activity first');
+                return;
+            }
+
+            totalSeconds = warningSeconds;
+            remainingSeconds = warningSeconds;
+            isRunning = true;
+
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('pauseBtn').style.display = 'inline-block';
+            document.getElementById('warningDisplay').classList.add('active');
+            document.getElementById('warningMessage').textContent = `Get ready...`;
+
+            speak(`Warning started. ${formatTime(remainingSeconds)} until ${currentActivity}`);
+
+            timerInterval = setInterval(() => {
+                remainingSeconds--;
+                updateDisplay();
+
+                // Voice warnings at key intervals
+                if (remainingSeconds === 300) speak('5 minutes until ' + currentActivity);
+                if (remainingSeconds === 120) speak('2 minutes until ' + currentActivity);
+                if (remainingSeconds === 60) speak('1 minute until ' + currentActivity);
+                if (remainingSeconds === 30) speak('30 seconds');
+                if (remainingSeconds === 10) speak('10 seconds');
+
+                if (remainingSeconds <= 0) {
+                    completeWarning();
+                }
+            }, 1000);
+        }
+
+        function pauseWarning() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('pauseBtn').style.display = 'none';
+            document.getElementById('warningDisplay').classList.remove('active');
+            speak('Warning paused');
+        }
+
+        function stopWarning() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            remainingSeconds = 0;
+            totalSeconds = 0;
+            updateDisplay();
+            document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('pauseBtn').style.display = 'none';
+            document.getElementById('warningDisplay').classList.remove('active');
+            document.getElementById('warningMessage').textContent = 'Set up your warning';
+            document.getElementById('warningTime').textContent = '--:--';
+            speak('Warning stopped');
+        }
+
+        function completeWarning() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('warningDisplay').classList.remove('active');
+            document.getElementById('alertActivity').textContent = `It's time for ${currentActivity}!`;
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('alertBox').classList.add('show');
+            speak(`Time is up! It's time for ${currentActivity}! Get ready!`);
+            playAlertSound();
+            createCelebration();
+        }
+
+        function closeAlert() {
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('alertBox').classList.remove('show');
+            stopWarning();
+        }
+
+        function updateDisplay() {
+            document.getElementById('warningTime').textContent = formatDisplayTime(remainingSeconds);
+            
+            // Update progress ring
+            const percentage = totalSeconds > 0 ? (remainingSeconds / totalSeconds) : 0;
+            const circumference = 2 * Math.PI * 90;
+            const offset = circumference * (1 - percentage);
+            document.getElementById('progressCircle').style.strokeDashoffset = offset;
+
+            // Change color based on time remaining
+            if (remainingSeconds <= 60) {
+                document.getElementById('progressCircle').style.stroke = '#f44336';
+                document.getElementById('warningTime').style.color = '#f44336';
+            } else if (remainingSeconds <= 300) {
+                document.getElementById('progressCircle').style.stroke = '#ff9800';
+                document.getElementById('warningTime').style.color = '#ff9800';
+            } else {
+                document.getElementById('progressCircle').style.stroke = '#4caf50';
+                document.getElementById('warningTime').style.color = '#4caf50';
+            }
+        }
+
+        function formatDisplayTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            if (mins === 0) return `${seconds} seconds`;
+            if (seconds % 60 === 0) return `${mins} minute${mins > 1 ? 's' : ''}`;
+            return `${mins} minute${mins > 1 ? 's' : ''} and ${seconds % 60} seconds`;
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.85;
+                utterance.pitch = 1.0;
+                utterance.volume = 0.9;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function playAlertSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            [523.25, 587.33, 659.25, 783.99].forEach((freq, i) => {
+                setTimeout(() => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+                    gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.5);
+                }, i * 200);
+            });
+        }
+
+        function createCelebration() {
+            const emojis = ['⏰', '⚠️', '🔔', '⏱️', '🚨'];
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.style.cssText = 'position:fixed;pointer-events:none;font-size:3em;z-index:2001;animation:fall 2s ease-out forwards;';
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.left = Math.random() * window.innerWidth + 'px';
+                    emoji.style.top = '-50px';
+                    document.body.appendChild(emoji);
+                    
+                    const style = document.createElement('style');
+                    style.textContent = '@keyframes fall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(' + (window.innerHeight + 100) + 'px) rotate(360deg);opacity:0}}';
+                    document.head.appendChild(style);
+                    
+                    setTimeout(() => {
+                        if (emoji.parentNode) emoji.parentNode.removeChild(emoji);
+                        if (style.parentNode) style.parentNode.removeChild(style);
+                    }, 2000);
+                }, i * 150);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            speak('Set up a warning to help you get ready for the next activity');
+        });
+    </script>
+</body>
+</html>
