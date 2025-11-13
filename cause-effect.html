@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Cause & Effect Games - Kaiden's World</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%); min-height: 100vh; padding: 20px; overflow: hidden; }
+        .back-button { position: fixed; top: 20px; left: 20px; background: white; color: #fbc02d; border: 2px solid #fbc02d; padding: 12px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; }
+        .back-button:hover { transform: scale(1.05); }
+        .header { text-align: center; margin: 60px 0 30px; color: #f57f17; }
+        .header h1 { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2em; color: #666; }
+        .game-selector { max-width: 1000px; margin: 0 auto 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .game-btn { background: white; border: 3px solid #fbc02d; color: #f57f17; padding: 20px; border-radius: 20px; font-size: 1.3em; font-weight: bold; cursor: pointer; transition: all 0.3s ease; text-align: center; }
+        .game-btn:hover { background: #fbc02d; color: white; transform: scale(1.05); }
+        .game-btn.active { background: #fbc02d; color: white; }
+        .game-area { max-width: 1200px; margin: 0 auto; background: white; border-radius: 30px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); min-height: 500px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .game-canvas { width: 100%; height: 450px; position: relative; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .pop-item { position: absolute; font-size: 4em; cursor: pointer; transition: all 0.3s ease; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        .pop-item:hover { transform: scale(1.2); }
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .firework { position: absolute; pointer-events: none; font-size: 2em; animation: explode 1s ease-out forwards; }
+        @keyframes explode { 0% { transform: scale(0) rotate(0deg); opacity: 1; } 100% { transform: scale(3) rotate(360deg); opacity: 0; } }
+        .color-button { width: 200px; height: 200px; border-radius: 30px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 5px solid white; }
+        .color-button:hover { transform: scale(1.1); }
+        .color-button:active { transform: scale(0.95); }
+        .sound-button { width: 180px; height: 180px; background: white; border: 5px solid #fbc02d; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-size: 4em; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .sound-button:hover { transform: scale(1.15); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+        .sound-button:active { transform: scale(0.9); }
+        .shape-item { cursor: pointer; transition: all 0.3s ease; }
+        .shape-item:hover { transform: scale(1.2) rotate(10deg); }
+        .instruction-text { font-size: 2em; color: #f57f17; font-weight: bold; text-align: center; margin-bottom: 30px; }
+        .celebration-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4em; font-weight: bold; color: #4caf50; animation: celebratePulse 1s ease-in-out; pointer-events: none; text-shadow: 3px 3px 6px rgba(0,0,0,0.2); }
+        @keyframes celebratePulse { 0%, 100% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } }
+        .grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 700px; }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .game-selector { grid-template-columns: 1fr; }
+            .grid-layout { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .color-button { width: 150px; height: 150px; }
+            .sound-button { width: 130px; height: 130px; font-size: 3em; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">🏠 Back</a>
+    
+    <div class="header">
+        <h1>🎯 Cause & Effect Games 🎯</h1>
+        <p class="subtitle">Touch and see what happens!</p>
+    </div>
+
+    <div class="game-selector">
+        <button class="game-btn active" onclick="loadGame('bubbles')">🫧 Pop Bubbles</button>
+        <button class="game-btn" onclick="loadGame('colors')">🌈 Color Magic</button>
+        <button class="game-btn" onclick="loadGame('sounds')">🔊 Sound Buttons</button>
+        <button class="game-btn" onclick="loadGame('shapes')">⭐ Shape Dance</button>
+    </div>
+
+    <div class="game-area">
+        <div class="game-canvas" id="gameCanvas"></div>
+    </div>
+
+    <script>
+        let currentGame = 'bubbles';
+        let score = 0;
+
+        function loadGame(game) {
+            currentGame = game;
+            score = 0;
+            
+            // Update active button
+            document.querySelectorAll('.game-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Clear canvas
+            const canvas = document.getElementById('gameCanvas');
+            canvas.innerHTML = '';
+            
+            // Load appropriate game
+            switch(game) {
+                case 'bubbles': loadBubbleGame(); break;
+                case 'colors': loadColorGame(); break;
+                case 'sounds': loadSoundGame(); break;
+                case 'shapes': loadShapeGame(); break;
+            }
+        }
+
+        // BUBBLE POPPING GAME
+        function loadBubbleGame() {
+            const canvas = document.getElementById('gameCanvas');
+            canvas.style.cursor = 'pointer';
+            speak('Pop the bubbles!');
+            
+            // Create bubbles periodically
+            createBubbles();
+            setInterval(() => {
+                if (currentGame === 'bubbles' && document.querySelectorAll('.pop-item').length < 8) {
+                    createBubbles();
+                }
+            }, 2000);
+        }
+
+        function createBubbles() {
+            const canvas = document.getElementById('gameCanvas');
+            const bubbles = ['🫧', '💙', '💚', '💛', '💜', '🔵', '🟢', '🟡'];
+            
+            for (let i = 0; i < 3; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'pop-item';
+                bubble.textContent = bubbles[Math.floor(Math.random() * bubbles.length)];
+                bubble.style.left = Math.random() * (canvas.offsetWidth - 80) + 'px';
+                bubble.style.top = Math.random() * (canvas.offsetHeight - 80) + 'px';
+                bubble.style.animationDelay = Math.random() * 2 + 's';
+                
+                bubble.onclick = function() {
+                    popBubble(this);
+                };
+                
+                canvas.appendChild(bubble);
+            }
+        }
+
+        function popBubble(element) {
+            const x = element.offsetLeft;
+            const y = element.offsetTop;
+            
+            // Pop animation
+            element.style.animation = 'pop 0.5s ease-out';
+            playPopSound();
+            createFirework(x + 40, y + 40);
+            
+            setTimeout(() => {
+                if (element.parentNode) {
+                    element.parentNode.removeChild(element);
+                }
+            }, 500);
+            
+            score++;
+            if (score % 5 === 0) {
+                showCelebration();
+            }
+        }
+
+        // COLOR MAGIC GAME
+        function loadColorGame() {
+            const canvas = document.getElementById('gameCanvas');
+            canvas.style.cursor = 'default';
+            canvas.innerHTML = '<div class="instruction-text">Touch a color and watch the magic!</div>';
+            
+            const colors = [
+                { color: '#ff6b6b', name: 'red' },
+                { color: '#4ecdc4', name: 'blue' },
+                { color: '#95e1d3', name: 'green' },
+                { color: '#f9ca24', name: 'yellow' },
+                { color: '#ee5a6f', name: 'pink' },
+                { color: '#c56cf0', name: 'purple' }
+            ];
+            
+            const grid = document.createElement('div');
+            grid.className = 'grid-layout';
+            
+            colors.forEach(colorData => {
+                const btn = document.createElement('div');
+                btn.className = 'color-button';
+                btn.style.background = colorData.color;
+                btn.onclick = function() {
+                    changeBackground(colorData.color, colorData.name);
+                };
+                grid.appendChild(btn);
+            });
+            
+            canvas.appendChild(grid);
+            speak('Touch a color!');
+        }
+
+        function changeBackground(color, name) {
+            document.body.style.background = `linear-gradient(135deg, ${color} 0%, ${adjustColor(color, -30)} 100%)`;
+            playMagicSound();
+            createColorSplash(color);
+            speak(`${name}!`);
+        }
+
+        function adjustColor(color, amount) {
+            return '#' + color.replace(/^#/, '').replace(/../g, color => ('0' + Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+        }
+
+        function createColorSplash(color) {
+            const canvas = document.getElementById('gameCanvas');
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const splash = document.createElement('div');
+                    splash.style.cssText = `
+                        position: absolute;
+                        width: 50px;
+                        height: 50px;
+                        background: ${color};
+                        border-radius: 50%;
+                        pointer-events: none;
+                        animation: splashOut 1s ease-out forwards;
+                    `;
+                    splash.style.left = (canvas.offsetWidth / 2) + 'px';
+                    splash.style.top = (canvas.offsetHeight / 2) + 'px';
+                    canvas.appendChild(splash);
+                    
+                    const style = document.createElement('style');
+                    style.textContent = `@keyframes splashOut { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(${(Math.random() - 0.5) * 300}px, ${(Math.random() - 0.5) * 300}px) scale(0); opacity: 0; } }`;
+                    document.head.appendChild(style);
+                    
+                    setTimeout(() => {
+                        if (splash.parentNode) splash.parentNode.removeChild(splash);
+                        if (style.parentNode) style.parentNode.removeChild(style);
+                    }, 1000);
+                }, i * 50);
+            }
+        }
+
+        // SOUND BUTTONS GAME
+        function loadSoundGame() {
+            const canvas = document.getElementById('gameCanvas');
+            canvas.style.cursor = 'default';
+            canvas.innerHTML = '<div class="instruction-text">Press buttons to make sounds!</div>';
+            
+            const sounds = [
+                { emoji: '🔔', freq: 523.25 },
+                { emoji: '🎵', freq: 659.25 },
+                { emoji: '🎶', freq: 783.99 },
+                { emoji: '🥁', freq: 392.00 },
+                { emoji: '🎺', freq: 329.63 },
+                { emoji: '🎸', freq: 261.63 }
+            ];
+            
+            const grid = document.createElement('div');
+            grid.className = 'grid-layout';
+            
+            sounds.forEach(sound => {
+                const btn = document.createElement('div');
+                btn.className = 'sound-button';
+                btn.textContent = sound.emoji;
+                btn.onclick = function() {
+                    playTone(sound.freq);
+                    btn.style.animation = 'none';
+                    setTimeout(() => { btn.style.animation = 'celebratePulse 0.5s ease-out'; }, 10);
+                };
+                grid.appendChild(btn);
+            });
+            
+            canvas.appendChild(grid);
+            speak('Press the buttons!');
+        }
+
+        // SHAPE DANCE GAME
+        function loadShapeGame() {
+            const canvas = document.getElementById('gameCanvas');
+            canvas.style.cursor = 'default';
+            canvas.innerHTML = '<div class="instruction-text">Touch shapes to make them dance!</div>';
+            
+            const shapes = [
+                { svg: '<circle cx="50" cy="50" r="40" fill="#ff6b6b"/>', name: 'circle' },
+                { svg: '<rect x="10" y="10" width="80" height="80" fill="#4ecdc4"/>', name: 'square' },
+                { svg: '<polygon points="50,10 90,80 10,80" fill="#f9ca24"/>', name: 'triangle' },
+                { svg: '<path d="M50,10 L61,35 L90,35 L67,52 L78,80 L50,63 L22,80 L33,52 L10,35 L39,35 Z" fill="#ee5a6f"/>', name: 'star' },
+                { svg: '<polygon points="50,10 75,35 75,65 50,90 25,65 25,35" fill="#c56cf0"/>', name: 'hexagon' },
+                { svg: '<ellipse cx="50" cy="50" rx="40" ry="25" fill="#95e1d3"/>', name: 'oval' }
+            ];
+            
+            const grid = document.createElement('div');
+            grid.className = 'grid-layout';
+            
+            shapes.forEach(shape => {
+                const container = document.createElement('div');
+                container.style.cssText = 'width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;';
+                container.innerHTML = `<svg class="shape-item" width="100" height="100" viewBox="0 0 100 100">${shape.svg}</svg>`;
+                container.onclick = function() {
+                    danceShape(container.querySelector('svg'), shape.name);
+                };
+                grid.appendChild(container);
+            });
+            
+            canvas.appendChild(grid);
+            speak('Touch the shapes!');
+        }
+
+        function danceShape(element, name) {
+            element.style.animation = 'none';
+            setTimeout(() => {
+                element.style.animation = 'celebratePulse 0.8s ease-in-out, float 2s ease-in-out infinite';
+            }, 10);
+            playPopSound();
+            speak(name);
+        }
+
+        // AUDIO FUNCTIONS
+        function playPopSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.setValueAtTime(800, audioContext.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.1);
+        }
+
+        function playMagicSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const frequencies = [523.25, 659.25, 783.99, 1046.50];
+            frequencies.forEach((freq, i) => {
+                setTimeout(() => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+                    gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.3);
+                }, i * 100);
+            });
+        }
+
+        function playTone(frequency) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.5);
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9;
+                utterance.pitch = 1.2;
+                utterance.volume = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function createFirework(x, y) {
+            const canvas = document.getElementById('gameCanvas');
+            const emojis = ['✨', '⭐', '🌟', '💫', '🎉'];
+            
+            for (let i = 0; i < 8; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                firework.style.left = x + 'px';
+                firework.style.top = y + 'px';
+                canvas.appendChild(firework);
+                
+                setTimeout(() => {
+                    if (firework.parentNode) {
+                        firework.parentNode.removeChild(firework);
+                    }
+                }, 1000);
+            }
+        }
+
+        function showCelebration() {
+            const canvas = document.getElementById('gameCanvas');
+            const msg = document.createElement('div');
+            msg.className = 'celebration-msg';
+            msg.textContent = '🎉 Amazing! 🎉';
+            canvas.appendChild(msg);
+            
+            speak('Amazing job!');
+            playMagicSound();
+            
+            setTimeout(() => {
+                if (msg.parentNode) {
+                    msg.parentNode.removeChild(msg);
+                }
+            }, 1000);
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            loadBubbleGame();
+        });
+    </script>
+</body>
+</html>
