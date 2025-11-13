@@ -904,6 +904,39 @@ function loadGames() {
             transform: scale(1.05);
         }
 
+        .settings-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.95);
+            color: #607d8b;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            animation: settingsPulse 3s ease-in-out infinite;
+        }
+
+        .settings-button:hover {
+            background: white;
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        @keyframes settingsPulse {
+            0%, 100% { box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+            50% { box-shadow: 0 8px 25px rgba(96,125,139,0.4); }
+        }
+
         .app-container {
             display: none;
             width: 100%;
@@ -1399,6 +1432,7 @@ function loadGames() {
 </head>
 <body>
     <button class="back-button" id="backButton" onclick="goHome()">🏠 Home</button>
+    <a href="settings.html" class="settings-button" title="Settings">⚙️</a>
 
     <!-- Floating Particles Background -->
     <div class="floating-particles" id="floatingParticles"></div>
@@ -1646,6 +1680,19 @@ function loadGames() {
                     <span class="feature-tag" style="background: #ede7f6; border-color: #5e35b1; color: #5e35b1;">Your Voice</span>
                     <span class="feature-tag" style="background: #ede7f6; border-color: #5e35b1; color: #5e35b1;">7 Categories</span>
                     <span class="feature-tag" style="background: #ede7f6; border-color: #5e35b1; color: #5e35b1;">Custom Messages</span>
+                </div>
+            </div>
+
+            <div class="app-card" onclick="window.location.href='settings.html'" style="cursor: pointer; border-color: #607d8b;">
+                <span class="app-icon">⚙️</span>
+                <div class="app-title">Settings</div>
+                <div class="app-description">
+                    Customize everything! Adjust voice, visuals, behaviors, and save your preferences.
+                </div>
+                <div class="app-features">
+                    <span class="feature-tag" style="background: #eceff1; border-color: #607d8b; color: #607d8b;">Voice Control</span>
+                    <span class="feature-tag" style="background: #eceff1; border-color: #607d8b; color: #607d8b;">Text Size</span>
+                    <span class="feature-tag" style="background: #eceff1; border-color: #607d8b; color: #607d8b;">Themes</span>
                 </div>
             </div>
         </div>

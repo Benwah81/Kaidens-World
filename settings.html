@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚙️ Settings - Kaiden's World</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 20px; }
+        .back-button { position: fixed; top: 20px; left: 20px; background: white; color: #607d8b; border: 2px solid #607d8b; padding: 12px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; }
+        .back-button:hover { transform: scale(1.05); }
+        .header { text-align: center; margin: 60px 0 30px; color: #607d8b; }
+        .header h1 { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2em; color: #666; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .settings-section { background: white; border-radius: 25px; padding: 30px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .section-title { font-size: 1.8em; font-weight: bold; color: #607d8b; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #f8f9fa; border-radius: 15px; margin-bottom: 15px; }
+        .setting-label { flex: 1; }
+        .setting-name { font-size: 1.2em; font-weight: bold; color: #333; display: block; margin-bottom: 5px; }
+        .setting-description { font-size: 0.9em; color: #666; }
+        .setting-control { display: flex; gap: 10px; align-items: center; }
+        .toggle-switch { position: relative; width: 60px; height: 30px; background: #ccc; border-radius: 30px; cursor: pointer; transition: all 0.3s ease; }
+        .toggle-switch.active { background: #4caf50; }
+        .toggle-slider { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; background: white; border-radius: 50%; transition: all 0.3s ease; }
+        .toggle-switch.active .toggle-slider { transform: translateX(30px); }
+        .slider-control { width: 200px; }
+        .slider { width: 100%; height: 8px; border-radius: 5px; background: #ddd; outline: none; }
+        .slider::-webkit-slider-thumb { width: 20px; height: 20px; border-radius: 50%; background: #607d8b; cursor: pointer; }
+        .slider-value { min-width: 50px; text-align: center; font-weight: bold; color: #607d8b; }
+        .select-control { padding: 10px 15px; border: 2px solid #607d8b; border-radius: 10px; font-size: 1em; cursor: pointer; background: white; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border: 2px solid #607d8b; background: white; color: #607d8b; border-radius: 15px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; }
+        .btn:hover { background: #607d8b; color: white; transform: scale(1.05); }
+        .btn.active { background: #607d8b; color: white; }
+        .action-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
+        .action-btn { padding: 15px 30px; border: none; border-radius: 20px; font-size: 1.2em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: all 0.3s ease; }
+        .btn-save { background: #4caf50; color: white; }
+        .btn-save:hover { background: #45a049; transform: scale(1.05); }
+        .btn-reset { background: #ff9800; color: white; }
+        .btn-reset:hover { background: #f57c00; transform: scale(1.05); }
+        .btn-export { background: #2196f3; color: white; }
+        .btn-export:hover { background: #1976d2; transform: scale(1.05); }
+        .btn-clear { background: #f44336; color: white; }
+        .btn-clear:hover { background: #d32f2f; transform: scale(1.05); }
+        .test-panel { background: #e8f5e9; border-radius: 15px; padding: 20px; margin-top: 15px; text-align: center; }
+        .test-btn { padding: 12px 25px; background: #4caf50; color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin: 5px; }
+        .test-btn:hover { background: #45a049; }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .setting-row { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .setting-control { width: 100%; justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">🏠 Back</a>
+    
+    <div class="header">
+        <h1>⚙️ Settings ⚙️</h1>
+        <p class="subtitle">Customize for your needs</p>
+    </div>
+
+    <div class="container">
+        <!-- Voice Settings -->
+        <div class="settings-section">
+            <div class="section-title">🔊 Voice Settings</div>
+            
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Voice Speed</span>
+                    <span class="setting-description">How fast the voice speaks</span>
+                </div>
+                <div class="setting-control">
+                    <div class="slider-control">
+                        <input type="range" class="slider" id="voiceSpeed" min="0.5" max="1.5" step="0.1" value="0.9" oninput="updateSlider('voiceSpeed')">
+                    </div>
+                    <span class="slider-value" id="voiceSpeedValue">0.9x</span>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Voice Pitch</span>
+                    <span class="setting-description">How high or low the voice sounds</span>
+                </div>
+                <div class="setting-control">
+                    <div class="slider-control">
+                        <input type="range" class="slider" id="voicePitch" min="0.5" max="2" step="0.1" value="1.1" oninput="updateSlider('voicePitch')">
+                    </div>
+                    <span class="slider-value" id="voicePitchValue">1.1x</span>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Voice Volume</span>
+                    <span class="setting-description">How loud the voice is</span>
+                </div>
+                <div class="setting-control">
+                    <div class="slider-control">
+                        <input type="range" class="slider" id="voiceVolume" min="0" max="1" step="0.1" value="0.9" oninput="updateSlider('voiceVolume')">
+                    </div>
+                    <span class="slider-value" id="voiceVolumeValue">90%</span>
+                </div>
+            </div>
+
+            <div class="test-panel">
+                <button class="test-btn" onclick="testVoice()">🔊 Test Voice</button>
+            </div>
+        </div>
+
+        <!-- Visual Settings -->
+        <div class="settings-section">
+            <div class="section-title">👁️ Visual Settings</div>
+            
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Text Size</span>
+                    <span class="setting-description">Size of text throughout the app</span>
+                </div>
+                <div class="setting-control">
+                    <div class="btn-group">
+                        <button class="btn" onclick="setTextSize('small')">Small</button>
+                        <button class="btn active" onclick="setTextSize('medium')">Medium</button>
+                        <button class="btn" onclick="setTextSize('large')">Large</button>
+                        <button class="btn" onclick="setTextSize('xlarge')">Extra Large</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Button Size</span>
+                    <span class="setting-description">Size of clickable buttons</span>
+                </div>
+                <div class="setting-control">
+                    <div class="btn-group">
+                        <button class="btn" onclick="setButtonSize('small')">Small</button>
+                        <button class="btn active" onclick="setButtonSize('medium')">Medium</button>
+                        <button class="btn" onclick="setButtonSize('large')">Large</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">High Contrast Mode</span>
+                    <span class="setting-description">Stronger colors for better visibility</span>
+                </div>
+                <div class="setting-control">
+                    <div class="toggle-switch" id="highContrast" onclick="toggleSetting('highContrast')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Behavior Settings -->
+        <div class="settings-section">
+            <div class="section-title">🎯 Behavior Settings</div>
+            
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Sound Effects</span>
+                    <span class="setting-description">Play sounds for interactions</span>
+                </div>
+                <div class="setting-control">
+                    <div class="toggle-switch active" id="soundEffects" onclick="toggleSetting('soundEffects')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Celebration Animations</span>
+                    <span class="setting-description">Show confetti and animations</span>
+                </div>
+                <div class="setting-control">
+                    <div class="toggle-switch active" id="celebrations" onclick="toggleSetting('celebrations')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Auto-Speak on Tap</span>
+                    <span class="setting-description">Automatically speak when buttons are pressed</span>
+                </div>
+                <div class="setting-control">
+                    <div class="toggle-switch active" id="autoSpeak" onclick="toggleSetting('autoSpeak')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Confirmation Dialogs</span>
+                    <span class="setting-description">Ask before clearing/deleting</span>
+                </div>
+                <div class="setting-control">
+                    <div class="toggle-switch active" id="confirmDialogs" onclick="toggleSetting('confirmDialogs')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interface Settings -->
+        <div class="settings-section">
+            <div class="section-title">🎨 Interface Settings</div>
+            
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Interface Mode</span>
+                    <span class="setting-description">Choose complexity level</span>
+                </div>
+                <div class="setting-control">
+                    <div class="btn-group">
+                        <button class="btn" onclick="setInterfaceMode('simple')">Simple</button>
+                        <button class="btn active" onclick="setInterfaceMode('standard')">Standard</button>
+                        <button class="btn" onclick="setInterfaceMode('advanced')">Advanced</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Theme</span>
+                    <span class="setting-description">Color scheme</span>
+                </div>
+                <div class="setting-control">
+                    <select class="select-control" id="theme" onchange="setTheme()">
+                        <option value="default">Default (Colorful)</option>
+                        <option value="pastel">Pastel</option>
+                        <option value="bright">Bright</option>
+                        <option value="dark">Dark Mode</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Show Feature Icons</span>
+                    <span class="setting-description">Display emoji icons in navigation</span>
+                </div>
+                <div class="setting-control">
+                    <div class="toggle-switch active" id="showIcons" onclick="toggleSetting('showIcons')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="settings-section">
+            <div class="section-title">💾 Data Management</div>
+            
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Export Settings</span>
+                    <span class="setting-description">Save your settings to a file</span>
+                </div>
+                <div class="setting-control">
+                    <button class="btn" onclick="exportSettings()">📥 Export</button>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Import Settings</span>
+                    <span class="setting-description">Load settings from a file</span>
+                </div>
+                <div class="setting-control">
+                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importSettings()">
+                    <button class="btn" onclick="document.getElementById('importFile').click()">📤 Import</button>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-name">Clear All Voice Recordings</span>
+                    <span class="setting-description">Delete all saved recordings</span>
+                </div>
+                <div class="setting-control">
+                    <button class="btn" style="border-color: #f44336; color: #f44336;" onclick="clearRecordings()">🗑️ Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-btn btn-save" onclick="saveSettings()">💾 Save Settings</button>
+            <button class="action-btn btn-reset" onclick="resetSettings()">🔄 Reset to Defaults</button>
+        </div>
+    </div>
+
+    <script>
+        // Default settings
+        const defaultSettings = {
+            voiceSpeed: 0.9,
+            voicePitch: 1.1,
+            voiceVolume: 0.9,
+            textSize: 'medium',
+            buttonSize: 'medium',
+            highContrast: false,
+            soundEffects: true,
+            celebrations: true,
+            autoSpeak: true,
+            confirmDialogs: true,
+            interfaceMode: 'standard',
+            theme: 'default',
+            showIcons: true
+        };
+
+        // Load settings on page load
+        let settings = { ...defaultSettings };
+        loadSettings();
+
+        function loadSettings() {
+            const saved = localStorage.getItem('kaidensWorldSettings');
+            if (saved) {
+                settings = { ...defaultSettings, ...JSON.parse(saved) };
+            }
+            applySettings();
+        }
+
+        function applySettings() {
+            // Voice settings
+            document.getElementById('voiceSpeed').value = settings.voiceSpeed;
+            document.getElementById('voicePitch').value = settings.voicePitch;
+            document.getElementById('voiceVolume').value = settings.voiceVolume;
+            updateSlider('voiceSpeed');
+            updateSlider('voicePitch');
+            updateSlider('voiceVolume');
+
+            // Visual settings
+            setActiveButton('.setting-row:nth-child(1) .btn', settings.textSize);
+            setActiveButton('.setting-row:nth-child(2) .btn', settings.buttonSize);
+            document.getElementById('highContrast').classList.toggle('active', settings.highContrast);
+
+            // Behavior settings
+            document.getElementById('soundEffects').classList.toggle('active', settings.soundEffects);
+            document.getElementById('celebrations').classList.toggle('active', settings.celebrations);
+            document.getElementById('autoSpeak').classList.toggle('active', settings.autoSpeak);
+            document.getElementById('confirmDialogs').classList.toggle('active', settings.confirmDialogs);
+
+            // Interface settings
+            document.querySelector('.settings-section:nth-child(4) .btn-group').querySelectorAll('.btn').forEach((btn, i) => {
+                const modes = ['simple', 'standard', 'advanced'];
+                btn.classList.toggle('active', modes[i] === settings.interfaceMode);
+            });
+            document.getElementById('theme').value = settings.theme;
+            document.getElementById('showIcons').classList.toggle('active', settings.showIcons);
+        }
+
+        function setActiveButton(selector, value) {
+            document.querySelectorAll(selector).forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.toLowerCase().includes(value));
+            });
+        }
+
+        function updateSlider(id) {
+            const slider = document.getElementById(id);
+            const valueDisplay = document.getElementById(id + 'Value');
+            const value = parseFloat(slider.value);
+            
+            if (id === 'voiceVolume') {
+                valueDisplay.textContent = Math.round(value * 100) + '%';
+            } else {
+                valueDisplay.textContent = value.toFixed(1) + 'x';
+            }
+            
+            settings[id] = value;
+        }
+
+        function setTextSize(size) {
+            settings.textSize = size;
+            setActiveButton('.settings-section:nth-child(2) .setting-row:nth-child(1) .btn', size);
+        }
+
+        function setButtonSize(size) {
+            settings.buttonSize = size;
+            setActiveButton('.settings-section:nth-child(2) .setting-row:nth-child(2) .btn', size);
+        }
+
+        function setInterfaceMode(mode) {
+            settings.interfaceMode = mode;
+            document.querySelector('.settings-section:nth-child(4) .btn-group').querySelectorAll('.btn').forEach((btn, i) => {
+                const modes = ['simple', 'standard', 'advanced'];
+                btn.classList.toggle('active', modes[i] === mode);
+            });
+        }
+
+        function setTheme() {
+            settings.theme = document.getElementById('theme').value;
+        }
+
+        function toggleSetting(id) {
+            const toggle = document.getElementById(id);
+            const isActive = toggle.classList.toggle('active');
+            settings[id] = isActive;
+        }
+
+        function testVoice() {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance('This is how the voice will sound with your current settings.');
+                utterance.rate = settings.voiceSpeed;
+                utterance.pitch = settings.voicePitch;
+                utterance.volume = settings.voiceVolume;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function saveSettings() {
+            localStorage.setItem('kaidensWorldSettings', JSON.stringify(settings));
+            speak('Settings saved successfully!');
+            celebrate();
+        }
+
+        function resetSettings() {
+            if (confirm('Reset all settings to defaults?')) {
+                settings = { ...defaultSettings };
+                localStorage.setItem('kaidensWorldSettings', JSON.stringify(settings));
+                applySettings();
+                speak('Settings reset to defaults');
+            }
+        }
+
+        function exportSettings() {
+            const dataStr = JSON.stringify(settings, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `kaidens-world-settings-${Date.now()}.json`;
+            link.click();
+            speak('Settings exported');
+        }
+
+        function importSettings() {
+            const file = document.getElementById('importFile').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        settings = { ...defaultSettings, ...imported };
+                        localStorage.setItem('kaidensWorldSettings', JSON.stringify(settings));
+                        applySettings();
+                        speak('Settings imported successfully');
+                    } catch (error) {
+                        alert('Error importing settings. Please check the file.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function clearRecordings() {
+            if (confirm('Delete ALL voice recordings? This cannot be undone!')) {
+                localStorage.removeItem('voiceRecordings');
+                speak('All recordings deleted');
+            }
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = settings.voiceSpeed;
+                utterance.pitch = settings.voicePitch;
+                utterance.volume = settings.voiceVolume;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function celebrate() {
+            const emojis = ['⚙️', '✨', '⭐', '🌟', '🎉'];
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.style.cssText = `
+                        position: fixed;
+                        font-size: 3em;
+                        pointer-events: none;
+                        z-index: 9999;
+                        animation: celebrate 2s ease-out forwards;
+                    `;
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.left = Math.random() * window.innerWidth + 'px';
+                    emoji.style.top = window.innerHeight + 'px';
+                    document.body.appendChild(emoji);
+                    
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes celebrate {
+                            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                            100% { transform: translateY(-${window.innerHeight + 100}px) rotate(360deg); opacity: 0; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                    setTimeout(() => {
+                        if (emoji.parentNode) emoji.parentNode.removeChild(emoji);
+                        if (style.parentNode) style.parentNode.removeChild(style);
+                    }, 2000);
+                }, i * 100);
+            }
+        }
+
+        // Welcome message
+        window.addEventListener('DOMContentLoaded', () => {
+            speak('Welcome to settings! Customize the app for your needs.');
+        });
+    </script>
+</body>
+</html>
