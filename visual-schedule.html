@@ -5,503 +5,161 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📅 My Schedule - Kaiden's World</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #2e7d32;
-            border: 2px solid #2e7d32;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .back-button:hover {
-            background: white;
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            margin-top: 60px;
-            color: #2e7d32;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .main-container {
-            display: flex;
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-            flex-wrap: wrap;
-        }
-
-        .activity-bank {
-            flex: 1;
-            min-width: 300px;
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 3px solid #4caf50;
-        }
-
-        .activity-bank-title {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #2e7d32;
-            font-size: 1.3em;
-            font-weight: bold;
-        }
-
-        .activity-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-        }
-
-        .activity-card {
-            background: #f1f8e9;
-            border-radius: 15px;
-            padding: 15px;
-            text-align: center;
-            cursor: grab;
-            transition: all 0.3s ease;
-            border: 2px solid #81c784;
-            min-height: 120px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .activity-card:active {
-            cursor: grabbing;
-        }
-
-        .activity-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            border-color: #4caf50;
-        }
-
-        .activity-icon {
-            font-size: 2.5em;
-            margin-bottom: 8px;
-        }
-
-        .activity-title {
-            font-size: 0.9em;
-            font-weight: bold;
-            color: #2e7d32;
-        }
-
-        .schedule-area {
-            flex: 2;
-            min-width: 400px;
-        }
-
-        .schedule-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .schedule-title {
-            color: #2e7d32;
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        .control-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-clear {
-            background: #ff5722;
-            color: white;
-        }
-
-        .btn-clear:hover {
-            background: #e64a19;
-            transform: scale(1.05);
-        }
-
-        .btn-review {
-            background: #2196f3;
-            color: white;
-        }
-
-        .btn-review:hover {
-            background: #1976d2;
-            transform: scale(1.05);
-        }
-
-        .timeline {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            min-height: 400px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 3px solid #4caf50;
-        }
-
-        .time-slot {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 15px;
-            border: 3px dashed #81c784;
-            min-height: 100px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .time-slot.filled {
-            background: #c8e6c9;
-            border-style: solid;
-            border-color: #4caf50;
-        }
-
-        .time-slot.drag-over {
-            background: #e8f5e8;
-            border-color: #4caf50;
-            border-style: solid;
-            border-width: 4px;
-            transform: scale(1.02);
-            box-shadow: 0 8px 25px rgba(76,175,80,0.3);
-        }
-
-        .drop-placeholder {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #81c784;
-            font-weight: bold;
-            font-size: 1.1em;
-            opacity: 0.7;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .time-label {
-            background: #4caf50;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin-right: 15px;
-            min-width: 80px;
-            text-align: center;
-        }
-
-        .activity-slot {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .scheduled-activity {
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            border: 2px solid #4caf50;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex: 1;
-        }
-
-        .scheduled-activity:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .scheduled-activity.completed {
-            opacity: 0.6;
-            background: #e8f5e8;
-            border-color: #81c784;
-        }
-
-        .scheduled-activity .icon {
-            font-size: 2em;
-        }
-
-        .scheduled-activity.completed .icon {
-            filter: grayscale(50%);
-        }
-
-        .scheduled-activity .title {
-            font-size: 1.1em;
-            color: #2e7d32;
-            font-weight: bold;
-        }
-
-        .completion-btn {
-            background: #4caf50;
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            margin-left: auto;
-        }
-
-        .completion-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .completion-btn.completed {
-            background: #81c784;
-        }
-
-        .progress-area {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .progress-bar-container {
-            background: #e0e0e0;
-            height: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-
-        .progress-bar-fill {
-            background: linear-gradient(90deg, #4caf50, #81c784);
-            height: 100%;
-            width: 0%;
-            transition: width 0.5s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 0.8em;
-        }
-
-        .celebration-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(76,175,80,0.9);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .celebration-content {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            animation: bounceIn 0.5s ease-out;
-        }
-
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0.3);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(1.05);
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        @keyframes floatUp {
-            0% {
-                transform: translateY(0px) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-200px) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); min-height: 100vh; padding: 20px; touch-action: manipulation; }
+        .back-button { position: fixed; top: 20px; left: 20px; background: white; color: #2e7d32; border: 2px solid #2e7d32; padding: 15px 30px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; font-size: 1.2em; }
+        .back-button:active { transform: scale(0.95); }
+        .header { text-align: center; margin: 60px 0 30px; color: #2e7d32; }
+        .header h1 { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; }
+        .subtitle { font-size: 1.3em; color: #666; margin-bottom: 20px; }
+        .instruction { background: #fff3e0; padding: 15px; border-radius: 15px; font-size: 1.1em; font-weight: bold; color: #f57c00; margin-bottom: 20px; text-align: center; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .progress-panel { background: white; border-radius: 25px; padding: 25px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .progress-title { font-size: 1.5em; font-weight: bold; color: #2e7d32; margin-bottom: 15px; text-align: center; }
+        .progress-bar-container { background: #e0e0e0; height: 40px; border-radius: 20px; overflow: hidden; margin-bottom: 15px; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #4caf50, #81c784); transition: width 0.5s ease; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1em; }
+        .progress-stats { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; }
+        .stat { background: #e8f5e9; padding: 12px 20px; border-radius: 15px; font-weight: bold; color: #2e7d32; }
+        .timeline-section { background: white; border-radius: 25px; padding: 25px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .section-title { font-size: 1.8em; font-weight: bold; color: #2e7d32; margin-bottom: 20px; text-align: center; }
+        .timeline { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .time-slot { background: #f5f5f5; border-radius: 20px; padding: 20px; border: 4px dashed #2e7d32; min-height: 180px; display: flex; flex-direction: column; transition: all 0.3s ease; cursor: pointer; }
+        .time-slot.active { border-style: solid; background: #e8f5e9; transform: scale(1.05); }
+        .time-slot.filled { border-style: solid; border-color: #4caf50; background: white; }
+        .time-label { font-size: 1.3em; font-weight: bold; color: #2e7d32; margin-bottom: 10px; text-align: center; }
+        .slot-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .drop-placeholder { color: #999; font-size: 1em; text-align: center; }
+        .scheduled-activity { text-align: center; animation: dropIn 0.5s ease-out; }
+        @keyframes dropIn { 0% { transform: scale(0.5); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+        .activity-icon-large { font-size: 3.5em; margin-bottom: 10px; }
+        .activity-title-large { font-size: 1.1em; font-weight: bold; margin-bottom: 10px; color: #333; }
+        .completion-btn { padding: 10px 20px; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 1.1em; transition: all 0.2s ease; margin-top: 10px; }
+        .completion-btn:active { transform: scale(0.95); }
+        .completion-btn.incomplete { background: #ff9800; color: white; }
+        .completion-btn.completed { background: #4caf50; color: white; }
+        .time-slot.completed { background: #e8f5e9; }
+        .activity-bank { background: white; border-radius: 25px; padding: 25px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .activities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        .activity-card { background: #e8f5e9; border-radius: 20px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 4px solid #2e7d32; min-height: 130px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .activity-card:active { transform: scale(0.95); }
+        .activity-card.selected { background: #ffd54f; border-color: #ff9800; transform: scale(1.1); box-shadow: 0 8px 20px rgba(255,152,0,0.4); animation: selectedPulse 1s ease-in-out infinite; }
+        @keyframes selectedPulse { 0%, 100% { box-shadow: 0 8px 20px rgba(255,152,0,0.4); } 50% { box-shadow: 0 12px 30px rgba(255,152,0,0.6); } }
+        .activity-icon { font-size: 3em; margin-bottom: 10px; }
+        .activity-title { font-size: 1em; font-weight: bold; color: #2e7d32; }
+        .controls { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        .btn { padding: 18px 35px; border: none; border-radius: 25px; font-size: 1.3em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: all 0.2s ease; }
+        .btn:active { transform: scale(0.95); }
+        .btn-clear { background: #ff9800; color: white; }
+        .btn-review { background: #2196f3; color: white; }
+        .remove-btn { background: #f44336; color: white; border: none; padding: 8px 16px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 0.9em; margin-top: 10px; }
+        .remove-btn:active { transform: scale(0.95); }
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
-            }
-
-            .main-container {
-                flex-direction: column;
-            }
-
-            .activity-grid {
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            }
+            .header h1 { font-size: 2em; }
+            .timeline { grid-template-columns: repeat(2, 1fr); }
+            .activities-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-button">🏠 Back to Home</a>
-
+    <a href="index.html" class="back-button">🏠 Back</a>
+    
     <div class="header">
-        <h1>📅 My Daily Schedule 📅</h1>
-        <p>Drag activities to build your day!</p>
+        <h1>📅 My Schedule 📅</h1>
+        <p class="subtitle">Plan your day!</p>
     </div>
 
-    <div class="main-container">
-        <!-- Activity Bank -->
+    <div class="container">
+        <div class="instruction" id="instruction">1️⃣ Tap an activity below to select it</div>
+
+        <div class="progress-panel">
+            <div class="progress-title">📊 Today's Progress</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar" style="width: 0%;">0%</div>
+            </div>
+            <div class="progress-stats">
+                <div class="stat">📅 <span id="totalCount">0</span> activities</div>
+                <div class="stat">✅ <span id="completedCount">0</span> completed</div>
+            </div>
+        </div>
+
+        <div class="timeline-section">
+            <div class="section-title">🕐 Your Day</div>
+            <div class="timeline" id="timeline"></div>
+        </div>
+
         <div class="activity-bank">
-            <div class="activity-bank-title">📦 Activity Bank</div>
-            <div class="activity-grid" id="activityBank">
-                <!-- Activities populated by JavaScript -->
-            </div>
+            <div class="section-title">📚 Activities</div>
+            <div class="activities-grid" id="activityBank"></div>
         </div>
 
-        <!-- Schedule Area -->
-        <div class="schedule-area">
-            <div class="schedule-controls">
-                <div class="schedule-title">Today's Schedule</div>
-                <div class="control-buttons">
-                    <button class="btn btn-clear" onclick="clearSchedule()">🗑️ Clear</button>
-                    <button class="btn btn-review" onclick="reviewSchedule()">▶️ Review</button>
-                </div>
-            </div>
-
-            <div class="timeline" id="timeline">
-                <!-- Time slots populated by JavaScript -->
-            </div>
-
-            <div class="progress-area">
-                <div>Progress: <span id="completedCount">0</span> of <span id="totalCount">0</span> activities completed!</div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill" id="progressFill">0%</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Celebration Overlay -->
-    <div class="celebration-overlay" id="celebrationOverlay">
-        <div class="celebration-content">
-            <h2>🎉 Amazing Job! 🎉</h2>
-            <p>You completed all your activities today!</p>
-            <button class="btn btn-review" onclick="hideCelebration()">Awesome!</button>
+        <div class="controls">
+            <button class="btn btn-review" onclick="reviewSchedule()">🔊 Review Schedule</button>
+            <button class="btn btn-clear" onclick="clearSchedule()">🔄 Clear All</button>
         </div>
     </div>
 
     <script>
-        // Schedule data
+        const timeSlots = ['7:00 AM', '8:00 AM', '9:00 AM', '12:00 PM', '3:00 PM', '6:00 PM', '7:00 PM', '8:00 PM'];
+        
         const activities = [
-            { id: 'wake_up', icon: '🌅', title: 'Wake Up', sound: 'Good morning!' },
-            { id: 'brush_teeth', icon: '🦷', title: 'Brush Teeth', sound: 'Time to brush teeth!' },
-            { id: 'breakfast', icon: '🥞', title: 'Breakfast', sound: 'Time to eat breakfast!' },
-            { id: 'get_dressed', icon: '👕', title: 'Get Dressed', sound: 'Time to get dressed!' },
-            { id: 'school', icon: '🏫', title: 'School', sound: 'Time for school!' },
-            { id: 'lunch', icon: '🥪', title: 'Lunch', sound: 'Time for lunch!' },
-            { id: 'play', icon: '🎮', title: 'Play Time', sound: 'Time to play!' },
-            { id: 'snack', icon: '🍎', title: 'Snack', sound: 'Time for a snack!' },
-            { id: 'homework', icon: '📚', title: 'Homework', sound: 'Time for homework!' },
-            { id: 'dinner', icon: '🍽️', title: 'Dinner', sound: 'Time for dinner!' },
-            { id: 'bath', icon: '🛁', title: 'Bath Time', sound: 'Time for a bath!' },
-            { id: 'bedtime', icon: '🌙', title: 'Bedtime', sound: 'Time for bed!' },
-            { id: 'read', icon: '📖', title: 'Reading', sound: 'Time to read!' },
-            { id: 'exercise', icon: '🏃', title: 'Exercise', sound: 'Time to exercise!' },
-            { id: 'clean', icon: '🧹', title: 'Clean Up', sound: 'Time to clean up!' },
-            { id: 'music', icon: '🎵', title: 'Music Time', sound: 'Time for music!' },
-            { id: 'outside', icon: '🌳', title: 'Outside Time', sound: 'Time to go outside!' },
-            { id: 'art', icon: '🎨', title: 'Art Time', sound: 'Time for art!' },
-            { id: 'tv', icon: '📺', title: 'TV Time', sound: 'Time to watch TV!' },
-            { id: 'nap', icon: '😴', title: 'Nap Time', sound: 'Time for a nap!' }
-        ];
-
-        const timeSlots = [
-            '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
-            '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM',
-            '7:00 PM', '8:00 PM'
+            { id: 'breakfast', icon: '🍳', title: 'Breakfast' },
+            { id: 'brush', icon: '🪥', title: 'Brush Teeth' },
+            { id: 'dress', icon: '👕', title: 'Get Dressed' },
+            { id: 'school', icon: '🏫', title: 'Go to School' },
+            { id: 'homework', icon: '📝', title: 'Homework' },
+            { id: 'lunch', icon: '🍽️', title: 'Lunch Time' },
+            { id: 'snack', icon: '🍪', title: 'Snack' },
+            { id: 'play', icon: '🎮', title: 'Play Time' },
+            { id: 'dinner', icon: '🍕', title: 'Dinner' },
+            { id: 'bath', icon: '🛁', title: 'Bath Time' },
+            { id: 'story', icon: '📖', title: 'Story Time' },
+            { id: 'sleep', icon: '😴', title: 'Bedtime' },
+            { id: 'tv', icon: '📺', title: 'TV Time' },
+            { id: 'outside', icon: '🌳', title: 'Go Outside' },
+            { id: 'clean', icon: '🧹', title: 'Clean Up' },
+            { id: 'music', icon: '🎵', title: 'Music Time' },
+            { id: 'art', icon: '🎨', title: 'Art Time' },
+            { id: 'exercise', icon: '🏃', title: 'Exercise' },
+            { id: 'friend', icon: '👫', title: 'Visit Friend' },
+            { id: 'therapy', icon: '🏥', title: 'Therapy' }
         ];
 
         let scheduleData = {};
         let completedActivities = new Set();
+        let selectedActivity = null;
 
-        // Initialize
         function init() {
             renderActivityBank();
             renderTimeline();
             updateProgress();
         }
 
-        // Render activity bank
         function renderActivityBank() {
             const bank = document.getElementById('activityBank');
             bank.innerHTML = activities.map(activity => `
-                <div class="activity-card" draggable="true" data-activity="${activity.id}">
+                <div class="activity-card" data-id="${activity.id}" onclick="selectActivity('${activity.id}')">
                     <div class="activity-icon">${activity.icon}</div>
                     <div class="activity-title">${activity.title}</div>
                 </div>
             `).join('');
-
-            // Setup drag events
-            document.querySelectorAll('.activity-card').forEach(card => {
-                card.addEventListener('dragstart', handleDragStart);
-                card.addEventListener('dragend', handleDragEnd);
-            });
         }
 
-        // Render timeline
+        function selectActivity(id) {
+            const activity = activities.find(a => a.id === id);
+            selectedActivity = activity;
+            
+            document.querySelectorAll('.activity-card').forEach(card => {
+                card.classList.toggle('selected', card.dataset.id === id);
+            });
+
+            document.querySelectorAll('.time-slot:not(.filled)').forEach(slot => {
+                slot.classList.add('active');
+            });
+
+            document.getElementById('instruction').textContent = '2️⃣ Tap a time slot to place it';
+            speak(`Selected ${activity.title}`);
+        }
+
         function renderTimeline() {
             const timeline = document.getElementById('timeline');
             timeline.innerHTML = timeSlots.map((time, index) => {
@@ -509,190 +167,190 @@
                 const isCompleted = completedActivities.has(index);
                 
                 return `
-                    <div class="time-slot ${activity ? 'filled' : ''}" data-slot="${index}">
-                        ${!activity ? '<div class="drop-placeholder">Drop activity here</div>' : ''}
+                    <div class="time-slot ${activity ? 'filled' : ''} ${isCompleted ? 'completed' : ''}" 
+                         data-slot="${index}" onclick="placeActivity(${index})">
                         <div class="time-label">${time}</div>
-                        <div class="activity-slot">
-                            ${activity ? `
-                                <div class="scheduled-activity ${isCompleted ? 'completed' : ''}" onclick="toggleCompletion(${index})">
-                                    <span class="icon">${activity.icon}</span>
-                                    <div class="title">${activity.title}</div>
-                                    <button class="completion-btn ${isCompleted ? 'completed' : ''}" onclick="event.stopPropagation(); toggleCompletion(${index})">
-                                        ${isCompleted ? '✓' : '○'}
+                        <div class="slot-content">
+                            ${!activity ? '<div class="drop-placeholder">Tap to place</div>' : `
+                                <div class="scheduled-activity">
+                                    <div class="activity-icon-large">${activity.icon}</div>
+                                    <div class="activity-title-large">${activity.title}</div>
+                                    <button class="completion-btn ${isCompleted ? 'completed' : 'incomplete'}" 
+                                            onclick="event.stopPropagation(); toggleCompletion(${index})">
+                                        ${isCompleted ? '✅ Done!' : '⭕ Mark Done'}
+                                    </button>
+                                    <button class="remove-btn" onclick="event.stopPropagation(); removeActivity(${index})">
+                                        🗑️ Remove
                                     </button>
                                 </div>
-                            ` : ''}
+                            `}
                         </div>
                     </div>
                 `;
             }).join('');
-
-            // Setup drop events
-            document.querySelectorAll('.time-slot').forEach(slot => {
-                slot.addEventListener('dragover', handleDragOver);
-                slot.addEventListener('dragleave', handleDragLeave);
-                slot.addEventListener('drop', handleDrop);
-            });
         }
 
-        // Drag and drop handlers
-        function handleDragStart(e) {
-            e.dataTransfer.setData('text/plain', e.target.dataset.activity);
-            e.target.style.opacity = '0.5';
-        }
-
-        function handleDragEnd(e) {
-            e.target.style.opacity = '1';
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.currentTarget.classList.add('drag-over');
-        }
-
-        function handleDragLeave(e) {
-            e.currentTarget.classList.remove('drag-over');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            e.currentTarget.classList.remove('drag-over');
-            
-            const activityId = e.dataTransfer.getData('text/plain');
-            const activity = activities.find(a => a.id === activityId);
-            const slotIndex = parseInt(e.currentTarget.dataset.slot);
-            
-            if (activity) {
-                scheduleData[slotIndex] = activity;
-                renderTimeline();
-                updateProgress();
-                
-                if ('speechSynthesis' in window) {
-                    const utterance = new SpeechSynthesisUtterance(
-                        `Added ${activity.title} to ${timeSlots[slotIndex]}`
-                    );
-                    speechSynthesis.speak(utterance);
-                }
+        function placeActivity(slotIndex) {
+            if (!selectedActivity) {
+                speak('Please select an activity first');
+                return;
             }
+
+            if (scheduleData[slotIndex]) {
+                speak('This time slot is full. Remove it first.');
+                return;
+            }
+
+            scheduleData[slotIndex] = selectedActivity;
+            speak(`Added ${selectedActivity.title} at ${timeSlots[slotIndex]}`);
+            
+            selectedActivity = null;
+            document.querySelectorAll('.activity-card').forEach(card => card.classList.remove('selected'));
+            document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('active'));
+            document.getElementById('instruction').textContent = '1️⃣ Tap an activity below to select it';
+            
+            renderTimeline();
+            updateProgress();
         }
 
-        // Toggle completion
+        function removeActivity(slotIndex) {
+            const activity = scheduleData[slotIndex];
+            delete scheduleData[slotIndex];
+            completedActivities.delete(slotIndex);
+            speak(`Removed ${activity.title}`);
+            renderTimeline();
+            updateProgress();
+        }
+
         function toggleCompletion(slotIndex) {
+            if (!scheduleData[slotIndex]) return;
+            
             if (completedActivities.has(slotIndex)) {
                 completedActivities.delete(slotIndex);
-                speak('Activity unchecked');
+                speak('Marked as not done');
             } else {
                 completedActivities.add(slotIndex);
                 const activity = scheduleData[slotIndex];
-                if (activity) {
-                    speak(`Great job completing ${activity.title}!`);
-                    createCelebrationEffect();
-                }
+                speak(`Great job completing ${activity.title}!`);
+                createCelebration();
             }
             
             renderTimeline();
             updateProgress();
-            
-            // Check if all completed
-            const scheduledCount = Object.keys(scheduleData).length;
-            if (scheduledCount > 0 && completedActivities.size === scheduledCount) {
-                showFullCelebration();
+        }
+
+        function updateProgress() {
+            const total = Object.keys(scheduleData).length;
+            const completed = completedActivities.size;
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressBar').textContent = percentage + '%';
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('completedCount').textContent = completed;
+
+            if (total > 0 && completed === total) {
+                setTimeout(() => {
+                    speak('Congratulations! You completed your entire schedule today! Amazing job!');
+                    createBigCelebration();
+                }, 500);
             }
         }
 
-        // Update progress
-        function updateProgress() {
-            const scheduledCount = Object.keys(scheduleData).length;
-            const completedCount = completedActivities.size;
-            const percentage = scheduledCount > 0 ? Math.round((completedCount / scheduledCount) * 100) : 0;
-
-            document.getElementById('totalCount').textContent = scheduledCount;
-            document.getElementById('completedCount').textContent = completedCount;
-            
-            const progressFill = document.getElementById('progressFill');
-            progressFill.style.width = percentage + '%';
-            progressFill.textContent = percentage + '%';
-        }
-
-        // Clear schedule
         function clearSchedule() {
+            if (Object.keys(scheduleData).length === 0) {
+                speak('Schedule is already empty');
+                return;
+            }
+            
             scheduleData = {};
             completedActivities.clear();
+            selectedActivity = null;
+            
+            document.querySelectorAll('.activity-card').forEach(card => card.classList.remove('selected'));
+            document.getElementById('instruction').textContent = '1️⃣ Tap an activity below to select it';
+            
             renderTimeline();
             updateProgress();
             speak('Schedule cleared');
         }
 
-        // Review schedule
         function reviewSchedule() {
-            const scheduledItems = Object.entries(scheduleData);
-            if (scheduledItems.length === 0) {
+            const items = Object.entries(scheduleData);
+            if (items.length === 0) {
                 speak('Your schedule is empty. Add some activities first!');
                 return;
             }
 
             speak('Here is your schedule for today:');
-            
-            scheduledItems.forEach(([slotIndex, activity], index) => {
-                const timeSlot = timeSlots[parseInt(slotIndex)];
+            items.forEach(([slotIndex, activity], i) => {
                 setTimeout(() => {
-                    speak(`At ${timeSlot}, ${activity.sound}`);
-                }, (index + 1) * 2000);
+                    speak(`At ${timeSlots[parseInt(slotIndex)]}, ${activity.title}`);
+                }, (i + 1) * 2000);
             });
         }
 
-        // Speech helper
         function speak(text) {
             if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.85;
+                utterance.pitch = 1.1;
+                utterance.volume = 0.9;
                 speechSynthesis.speak(utterance);
             }
         }
 
-        // Celebration effects
-        function createCelebrationEffect() {
-            const stars = ['⭐', '✨', '🌟', '💫', '🎉'];
-            for (let i = 0; i < 4; i++) {
+        function createCelebration() {
+            const emojis = ['⭐', '✨', '🌟', '💫'];
+            for (let i = 0; i < 6; i++) {
                 setTimeout(() => {
-                    const star = document.createElement('div');
-                    star.style.cssText = `
-                        position: fixed; 
-                        pointer-events: none; 
-                        font-size: 3em; 
-                        z-index: 999;
-                        animation: floatUp 3s ease-out forwards;
-                    `;
-                    star.textContent = stars[Math.floor(Math.random() * stars.length)];
-                    star.style.left = Math.random() * window.innerWidth + 'px';
-                    star.style.top = (window.innerHeight - 100) + 'px';
-                    document.body.appendChild(star);
+                    const emoji = document.createElement('div');
+                    emoji.style.cssText = `position: fixed; font-size: 3em; pointer-events: none; z-index: 9999; animation: celebrate 2s ease-out forwards;`;
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.left = Math.random() * window.innerWidth + 'px';
+                    emoji.style.top = window.innerHeight + 'px';
+                    document.body.appendChild(emoji);
+                    
+                    const style = document.createElement('style');
+                    style.textContent = `@keyframes celebrate { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-${window.innerHeight + 100}px) rotate(360deg); opacity: 0; } }`;
+                    document.head.appendChild(style);
                     
                     setTimeout(() => {
-                        if (star.parentNode) {
-                            star.parentNode.removeChild(star);
-                        }
-                    }, 3000);
-                }, i * 200);
+                        if (emoji.parentNode) emoji.parentNode.removeChild(emoji);
+                        if (style.parentNode) style.parentNode.removeChild(style);
+                    }, 2000);
+                }, i * 100);
             }
         }
 
-        function showFullCelebration() {
-            const overlay = document.getElementById('celebrationOverlay');
-            overlay.style.display = 'flex';
-            
-            speak('Congratulations! You completed your entire schedule today! You did an amazing job!');
-            
-            for (let i = 0; i < 15; i++) {
-                setTimeout(() => createCelebrationEffect(), i * 100);
+        function createBigCelebration() {
+            const emojis = ['🎉', '🎊', '⭐', '✨', '🌟', '💫', '🏆', '👏'];
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.style.cssText = `position: fixed; font-size: 3em; pointer-events: none; z-index: 9999; animation: celebrate 2s ease-out forwards;`;
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    emoji.style.left = Math.random() * window.innerWidth + 'px';
+                    emoji.style.top = window.innerHeight + 'px';
+                    document.body.appendChild(emoji);
+                    
+                    const style = document.createElement('style');
+                    style.textContent = `@keyframes celebrate { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-${window.innerHeight + 100}px) rotate(360deg); opacity: 0; } }`;
+                    document.head.appendChild(style);
+                    
+                    setTimeout(() => {
+                        if (emoji.parentNode) emoji.parentNode.removeChild(emoji);
+                        if (style.parentNode) style.parentNode.removeChild(style);
+                    }, 2000);
+                }, i * 100);
             }
         }
 
-        function hideCelebration() {
-            document.getElementById('celebrationOverlay').style.display = 'none';
-        }
-
-        // Initialize on load
-        window.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('DOMContentLoaded', () => {
+            init();
+            speak('Build your schedule by tapping activities');
+        });
     </script>
 </body>
 </html>
