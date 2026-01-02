@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<!--
+====================================================================================
+KAIDEN'S WORLD - AAC Communication Application
+Official Repository: https://github.com/Benwah81/Kaidens-World
+Original Author: Ben Wahlers
+License: Creative Commons BY-NC-SA 4.0 (See LICENSE file)
+====================================================================================
+
+⚠️ OFFICIAL VERSION NOTICE:
+The ONLY official version of Kaiden's World is hosted at:
+https://benwah81.github.io/Kaidens-World/
+
+Any other versions, modifications, or distributions are NOT affiliated with,
+endorsed by, or attributed to the original creator unless explicitly stated.
+
+====================================================================================
+
+📋 IMPORTANT DISCLAIMERS:
+
+1. LIABILITY: This software is provided "AS-IS" for therapeutic and educational 
+   purposes only. The original author is NOT responsible for any modified versions, 
+   malicious use, or damages arising from the use of this or modified software.
+
+2. THERAPEUTIC USE: This is a supplemental communication tool and does NOT replace 
+   professional medical advice. Always consult qualified speech-language pathologists 
+   or therapists for AAC and communication needs.
+
+3. MODIFIED VERSIONS: If you modify this code, you MUST clearly state it's modified,
+   provide attribution to the original author, and NOT imply endorsement by the 
+   original creator.
+
+====================================================================================
+For full license terms, see: LICENSE file in repository
+For commercial use inquiries: Contact via GitHub repository
+====================================================================================
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Browser Check - Kaiden's World</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2em; opacity: 0.9; }
+        .test-panel { background: white; border-radius: 25px; padding: 30px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .panel-title { font-size: 1.8em; font-weight: bold; color: #667eea; margin-bottom: 20px; text-align: center; }
+        .test-item { background: #f8f9fa; border-radius: 15px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .test-label { flex: 1; }
+        .test-name { font-size: 1.3em; font-weight: bold; margin-bottom: 5px; }
+        .test-desc { font-size: 0.9em; color: #666; }
+        .test-status { font-size: 2em; min-width: 60px; text-align: center; }
+        .status-checking { opacity: 0.5; }
+        .browser-info { background: #e8eaf6; border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.1em; }
+        .info-label { font-weight: bold; color: #667eea; }
+        .test-button { padding: 15px 30px; background: #667eea; color: white; border: none; border-radius: 20px; font-size: 1.2em; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: all 0.3s ease; }
+        .test-button:hover { background: #764ba2; transform: scale(1.05); }
+        .test-button:active { transform: scale(0.95); }
+        .overall-status { text-align: center; padding: 30px; font-size: 1.5em; font-weight: bold; border-radius: 20px; margin-top: 20px; }
+        .overall-status.good { background: #c8e6c9; color: #2e7d32; }
+        .overall-status.warning { background: #fff3e0; color: #f57c00; }
+        .overall-status.bad { background: #ffcdd2; color: #c62828; }
+        .recommendation { background: #e3f2fd; border-radius: 15px; padding: 20px; margin-top: 20px; }
+        .recommendation h3 { color: #1976d2; margin-bottom: 10px; }
+        .back-button { position: fixed; top: 20px; left: 20px; background: white; color: #667eea; border: 2px solid #667eea; padding: 12px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; font-size: 1em; }
+        .back-button:active { transform: scale(0.95); }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .test-item { flex-direction: column; text-align: center; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">🏠 Back</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Browser Compatibility Check 🔍</h1>
+            <p class="subtitle">Let's make sure everything works perfectly!</p>
+        </div>
+
+        <div class="test-panel">
+            <div class="panel-title">📱 Your Browser Information</div>
+            <div class="browser-info">
+                <div class="info-row">
+                    <span class="info-label">Browser:</span>
+                    <span id="browserName">Checking...</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Device:</span>
+                    <span id="deviceType">Checking...</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Operating System:</span>
+                    <span id="osName">Checking...</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Screen Size:</span>
+                    <span id="screenSize">Checking...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-panel">
+            <div class="panel-title">🧪 Feature Tests</div>
+            
+            <div class="test-item">
+                <div class="test-label">
+                    <div class="test-name">🔊 Voice Output (Text-to-Speech)</div>
+                    <div class="test-desc">Used in all features with voice feedback</div>
+                </div>
+                <div class="test-status status-checking" id="ttsStatus">⏳</div>
+            </div>
+
+            <div class="test-item">
+                <div class="test-label">
+                    <div class="test-name">🎙️ Microphone Access</div>
+                    <div class="test-desc">Required for Voice Recorder feature</div>
+                </div>
+                <div class="test-status status-checking" id="micStatus">⏳</div>
+            </div>
+
+            <div class="test-item">
+                <div class="test-label">
+                    <div class="test-name">🎨 Canvas Drawing</div>
+                    <div class="test-desc">Required for Art Board feature</div>
+                </div>
+                <div class="test-status status-checking" id="canvasStatus">⏳</div>
+            </div>
+
+            <div class="test-item">
+                <div class="test-label">
+                    <div class="test-name">👆 Touch Events</div>
+                    <div class="test-desc">Required for tablet interactions</div>
+                </div>
+                <div class="test-status status-checking" id="touchStatus">⏳</div>
+            </div>
+
+            <div class="test-item">
+                <div class="test-label">
+                    <div class="test-name">💾 Local Storage</div>
+                    <div class="test-desc">Saves settings and recordings</div>
+                </div>
+                <div class="test-status status-checking" id="storageStatus">⏳</div>
+            </div>
+
+            <div class="test-item">
+                <div class="test-label">
+                    <div class="test-name">🔊 Audio Playback</div>
+                    <div class="test-desc">Plays sounds and effects</div>
+                </div>
+                <div class="test-status status-checking" id="audioStatus">⏳</div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="test-button" onclick="runAllTests()">▶️ Run Tests</button>
+            </div>
+        </div>
+
+        <div id="overallResult"></div>
+        <div id="recommendations"></div>
+    </div>
+
+    <script>
+        // Detect browser info on load
+        window.addEventListener('DOMContentLoaded', () => {
+            detectBrowser();
+        });
+
+        function detectBrowser() {
+            const ua = navigator.userAgent;
+            let browserName = 'Unknown Browser';
+            let deviceType = 'Desktop';
+            let osName = 'Unknown OS';
+
+            // Detect browser
+            if (ua.indexOf('Firefox') > -1) browserName = 'Firefox';
+            else if (ua.indexOf('SamsungBrowser') > -1) browserName = 'Samsung Internet';
+            else if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR') > -1) browserName = 'Opera';
+            else if (ua.indexOf('Trident') > -1) browserName = 'Internet Explorer';
+            else if (ua.indexOf('Edge') > -1) browserName = 'Edge (Legacy)';
+            else if (ua.indexOf('Edg') > -1) browserName = 'Microsoft Edge';
+            else if (ua.indexOf('Chrome') > -1) browserName = 'Chrome';
+            else if (ua.indexOf('Safari') > -1) browserName = 'Safari';
+
+            // Detect device type
+            if (/tablet|ipad/i.test(ua)) deviceType = 'Tablet';
+            else if (/mobile|android|iphone/i.test(ua)) deviceType = 'Mobile Phone';
+
+            // Detect OS
+            if (ua.indexOf('Windows') > -1) osName = 'Windows';
+            else if (ua.indexOf('Mac') > -1) osName = 'macOS';
+            else if (ua.indexOf('Linux') > -1) osName = 'Linux';
+            else if (ua.indexOf('Android') > -1) osName = 'Android';
+            else if (/iPad|iPhone|iPod/.test(ua)) osName = 'iOS';
+
+            document.getElementById('browserName').textContent = browserName;
+            document.getElementById('deviceType').textContent = deviceType;
+            document.getElementById('osName').textContent = osName;
+            document.getElementById('screenSize').textContent = `${window.screen.width} × ${window.screen.height}`;
+        }
+
+        async function runAllTests() {
+            let passed = 0;
+            let total = 6;
+
+            // Test 1: Text-to-Speech
+            const ttsSupported = 'speechSynthesis' in window;
+            updateStatus('ttsStatus', ttsSupported);
+            if (ttsSupported) passed++;
+
+            // Test 2: Microphone (ask for permission)
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                updateStatus('micStatus', true);
+                stream.getTracks().forEach(track => track.stop());
+                passed++;
+            } catch (e) {
+                updateStatus('micStatus', false, 'Permission needed or not available');
+            }
+
+            // Test 3: Canvas
+            const canvasSupported = !!document.createElement('canvas').getContext;
+            updateStatus('canvasStatus', canvasSupported);
+            if (canvasSupported) passed++;
+
+            // Test 4: Touch Events
+            const touchSupported = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            updateStatus('touchStatus', touchSupported);
+            if (touchSupported) passed++;
+
+            // Test 5: Local Storage
+            let storageSupported = false;
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                storageSupported = true;
+            } catch (e) {}
+            updateStatus('storageStatus', storageSupported);
+            if (storageSupported) passed++;
+
+            // Test 6: Audio
+            const audioSupported = !!document.createElement('audio').canPlayType;
+            updateStatus('audioStatus', audioSupported);
+            if (audioSupported) passed++;
+
+            // Show overall result
+            showOverallResult(passed, total);
+        }
+
+        function updateStatus(elementId, passed, message = '') {
+            const element = document.getElementById(elementId);
+            element.className = 'test-status';
+            
+            if (passed) {
+                element.textContent = '✅';
+                element.style.color = '#4caf50';
+            } else {
+                element.textContent = '❌';
+                element.style.color = '#f44336';
+            }
+
+            if (message) {
+                element.title = message;
+            }
+        }
+
+        function showOverallResult(passed, total) {
+            const percentage = Math.round((passed / total) * 100);
+            const resultDiv = document.getElementById('overallResult');
+            const recsDiv = document.getElementById('recommendations');
+            
+            let statusClass = 'good';
+            let statusText = '🎉 Perfect! All features will work great!';
+            let recommendations = '';
+
+            if (percentage < 100 && percentage >= 80) {
+                statusClass = 'warning';
+                statusText = '⚠️ Most features will work, but some may have issues';
+                recommendations = `
+                    <div class="recommendation">
+                        <h3>💡 Recommendations:</h3>
+                        <p><strong>• Voice Recorder may not work</strong> - All other features should work fine</p>
+                        <p>• Try using Chrome, Edge, or Safari for best compatibility</p>
+                        <p>• Make sure to allow microphone permissions when prompted</p>
+                    </div>
+                `;
+            } else if (percentage < 80) {
+                statusClass = 'bad';
+                statusText = '❌ Some features may not work properly';
+                recommendations = `
+                    <div class="recommendation">
+                        <h3>🚨 Action Required:</h3>
+                        <p><strong>• Try a different browser:</strong></p>
+                        <p>&nbsp;&nbsp;- iPad/iPhone: Use Safari</p>
+                        <p>&nbsp;&nbsp;- Android: Use Chrome</p>
+                        <p>&nbsp;&nbsp;- Desktop: Use Chrome, Edge, or Firefox</p>
+                        <p>• Update your browser to the latest version</p>
+                        <p>• Check browser permissions (microphone, storage)</p>
+                    </div>
+                `;
+            }
+
+            resultDiv.innerHTML = `
+                <div class="overall-status ${statusClass}">
+                    ${statusText}
+                    <div style="margin-top: 15px; font-size: 0.8em;">
+                        Passed ${passed} out of ${total} tests (${percentage}%)
+                    </div>
+                </div>
+            `;
+
+            recsDiv.innerHTML = recommendations;
+
+            // Test voice to confirm it works
+            if (passed === total && 'speechSynthesis' in window) {
+                setTimeout(() => {
+                    const utterance = new SpeechSynthesisUtterance('All tests passed! Your browser is ready for Kaidens World!');
+                    utterance.rate = 0.9;
+                    utterance.pitch = 1.1;
+                    speechSynthesis.speak(utterance);
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>

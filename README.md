@@ -6,6 +6,26 @@
 
 ---
 
+## ⚠️ **OFFICIAL VERSION NOTICE**
+
+**This is the ONLY official version of Kaiden's World:**
+- **Official Website:** https://benwah81.github.io/Kaidens-World/
+- **Official Repository:** https://github.com/Benwah81/Kaidens-World
+- **Original Creator:** Ben Wahlers
+
+**Any other versions, forks, modifications, or distributions found elsewhere are NOT affiliated with, endorsed by, or attributed to the original creator unless explicitly stated in writing.**
+
+**IMPORTANT LEGAL DISCLAIMERS:**
+- ✅ **Open for Use:** This software is free to use for personal, educational, and therapeutic purposes under Creative Commons BY-NC-SA 4.0 license.
+- 🚫 **No Commercial Use:** Commercial use requires explicit written permission from the original author.
+- ⚖️ **No Liability:** The original author is NOT responsible for any modified versions, malicious use, or damages arising from use of this software.
+- 🏥 **Supplemental Tool Only:** This is NOT a replacement for professional medical advice. Always consult qualified speech-language pathologists or therapists.
+- 📝 **Modified Versions:** If you modify this code, you MUST clearly state it's modified, provide attribution to Ben Wahlers, and NOT imply endorsement by the original creator.
+
+**See [LICENSE](LICENSE) file for complete legal terms and restrictions.**
+
+---
+
 ## 📱 About This Project
 
 Kaiden's World is a personal project created with love to support communication and learning for a non-verbal child. Built with evidence-based AAC research and professional therapeutic practices in mind, this application provides tools and exercises used by speech-language pathologists and therapists, all accessible through any modern web browser on tablets, phones, or computers.
@@ -496,20 +516,53 @@ For technical issues or questions:
 
 ## 📜 License & Usage
 
-**Open Source - Personal, Educational, and Therapeutic Use**
+**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)**
 
-This project is freely available for:
-- Personal use by families
-- Educational use in schools
-- Therapeutic use by speech therapists
-- Research and study
-- Adaptation for similar projects
+**Copyright (c) 2024-2025 Ben Wahlers**
 
-**Attribution:**
-While not required, attribution is appreciated if you use or adapt this project.
+This project is licensed under Creative Commons BY-NC-SA 4.0. See the [LICENSE](LICENSE) file for complete legal terms.
 
-**No Warranty:**
-This software is provided "as is" without warranty of any kind. Use at your own discretion.
+### ✅ **YOU ARE FREE TO:**
+- **Share** - Copy and redistribute the material in any medium or format
+- **Adapt** - Remix, transform, and build upon the material
+
+### 📋 **UNDER THESE TERMS:**
+- **Attribution** - You must give appropriate credit to Ben Wahlers, provide a link to the license, and indicate if changes were made
+- **NonCommercial** - You may NOT use the material for commercial purposes without explicit written permission
+- **ShareAlike** - If you remix or build upon the material, you must distribute under the same CC BY-NC-SA 4.0 license
+- **No Additional Restrictions** - You may not apply legal terms that restrict others from doing anything the license permits
+
+### ⚠️ **IMPORTANT RESTRICTIONS:**
+
+**PROHIBITED USES:**
+- ❌ Commercial use without written permission
+- ❌ Claiming this work as your own original creation
+- ❌ Implying endorsement by the original author for modified versions
+- ❌ Using this software to harm children or vulnerable individuals
+- ❌ Removing or modifying attribution to the original author
+- ❌ Distributing under a different or more restrictive license
+
+**REQUIRED FOR MODIFIED VERSIONS:**
+- ✅ Clearly state that your version is modified (not the official version)
+- ✅ Remove any attribution suggesting endorsement by Ben Wahlers
+- ✅ Provide attribution to the original author (Ben Wahlers)
+- ✅ Share your modifications under the same CC BY-NC-SA 4.0 license
+- ✅ Include the LICENSE file and disclaimers with your distribution
+
+**LIABILITY DISCLAIMER:**
+This software is provided "AS IS" without warranty of any kind. The original author makes NO WARRANTIES about suitability, reliability, or accuracy. The original author is NOT responsible for any damages, losses, or issues arising from use of this software or any modified versions.
+
+**THERAPEUTIC USE DISCLAIMER:**
+This application is designed as a supplemental communication tool and should NOT replace professional medical advice, diagnosis, or treatment. Always seek advice from qualified speech-language pathologists, therapists, or other qualified health providers regarding AAC and communication needs.
+
+### 📞 **Contact for Permissions:**
+For commercial use inquiries, custom licensing, or questions about permitted use:
+- Contact through GitHub repository: https://github.com/Benwah81/Kaidens-World
+
+### 📖 **Full License Text:**
+- View online: https://creativecommons.org/licenses/by-nc-sa/4.0/
+- Legal code: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+- Complete terms: See [LICENSE](LICENSE) file in this repository
 
 ---
 
